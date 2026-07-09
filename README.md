@@ -1,0 +1,2 @@
+# aarith
+personal website :)
