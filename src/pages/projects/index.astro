@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+---
+
+<BaseLayout
+  title="Projects — Your Name"
+  description="CS, EE, and neuro-adjacent projects — things I've built end to end."
+>
+  <section class="mx-auto max-w-4xl px-6 py-20">
+    <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+      Projects
+    </p>
+    <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+      Things I've built
+    </h1>
+    <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
+      Placeholder intro — a mix of CS, EE, and neuro-adjacent projects, each with its own
+      write-up.
+    </p>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>

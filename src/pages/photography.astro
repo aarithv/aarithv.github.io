@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+
+// public/ isn't part of Vite's module graph, so it can't be globbed at build
+// time — list filenames here. Adding a real photo is a one-line addition.
+const filenames = ['photo-1.svg', 'photo-2.svg', 'photo-3.svg', 'photo-4.svg', 'photo-5.svg'];
+
+const photos = filenames.map((filename, index) => ({
+  src: `/images/photography/${filename}`,
+  alt: `Placeholder photo ${index + 1} — swap for a real photo`,
+}));
+---
+
+<BaseLayout
+  title="Photography — Your Name"
+  description="What I look at when I'm not working."
+>
+  <section class="mx-auto max-w-4xl px-6 py-20">
+    <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+      Photography
+    </p>
+    <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+      What I look at when I'm not working
+    </h1>
+    <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
+      Placeholder intro — swap in a real set of 10&ndash;20 images, organized by theme or
+      roughly chronologically.
+    </p>
+
+    <div class="mt-12">
+      <PhotoGrid photos={photos} />
+    </div>
+  </section>
+
+  <div
+    id="lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Photo viewer"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-ink/90 p-4 sm:p-10"
+  >
+    <button
+      id="lightbox-close"
+      type="button"
+      aria-label="Close"
+      class="absolute right-4 top-4 rounded-full bg-cream/10 p-2 text-cream transition-colors hover:bg-cream/20 sm:right-8 sm:top-8"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M4 4L16 16M16 4L4 16"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+    </button>
+    <button
+      id="lightbox-prev"
+      type="button"
+      aria-label="Previous photo"
+      class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-cream/10 p-2 text-cream transition-colors hover:bg-cream/20 sm:left-6"
+    >
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 4L6 10L12 16"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </button>
+    <button
+      id="lightbox-next"
+      type="button"
+      aria-label="Next photo"
+      class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-cream/10 p-2 text-cream transition-colors hover:bg-cream/20 sm:right-6"
+    >
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M8 4L14 10L8 16"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="" class="max-h-full max-w-full rounded-lg object-contain shadow-2xl" />
+    <p id="lightbox-status" class="sr-only" role="status" aria-live="polite"></p>
+  </div>
+</BaseLayout>
+
+<script>
+  const triggers = document.querySelectorAll('[data-lightbox-index]');
+  const overlay = document.querySelector('#lightbox');
+  const overlayImg = document.querySelector('#lightbox-img');
+  const status = document.querySelector('#lightbox-status');
+  const closeBtn = document.querySelector('#lightbox-close');
+  const prevBtn = document.querySelector('#lightbox-prev');
+  const nextBtn = document.querySelector('#lightbox-next');
+  const focusable = [prevBtn, closeBtn, nextBtn].filter(Boolean);
+
+  const photos = Array.from(triggers).map((el) => ({
+    src: el.getAttribute('data-full-src') || '',
+    alt: el.getAttribute('data-alt') || '',
+  }));
+
+  let currentIndex = 0;
+  let lastTrigger = null;
+
+  function openAt(index) {
+    if (photos.length === 0 || !overlay || !overlayImg) return;
+    currentIndex = (index + photos.length) % photos.length;
+    const photo = photos[currentIndex];
+    overlayImg.src = photo.src;
+    overlayImg.alt = photo.alt;
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    if (status) {
+      status.textContent = `Photo ${currentIndex + 1} of ${photos.length}: ${photo.alt}`;
+    }
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeLightbox() {
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+    if (lastTrigger) lastTrigger.focus();
+  }
+
+  triggers.forEach((trigger, index) => {
+    trigger.addEventListener('click', () => {
+      lastTrigger = trigger;
+      openAt(index);
+    });
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeLightbox();
+    });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', () => openAt(currentIndex - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => openAt(currentIndex + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (!overlay || overlay.classList.contains('hidden')) return;
+    if (e.key === 'Escape') {
+      closeLightbox();
+      return;
+    }
+    if (e.key === 'ArrowLeft') openAt(currentIndex - 1);
+    if (e.key === 'ArrowRight') openAt(currentIndex + 1);
+
+    if (e.key === 'Tab' && focusable.length > 0) {
+      const currentPos = focusable.indexOf(document.activeElement);
+      e.preventDefault();
+      const step = e.shiftKey ? -1 : 1;
+      const nextPos = (currentPos + step + focusable.length) % focusable.length;
+      focusable[nextPos].focus();
+    }
+  });
+</script>

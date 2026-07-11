@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Placeholder photo one">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E7C9B4" />
+      <stop offset="100%" stop-color="#C1613C" />
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" fill="url(#g1)" />
+  <rect y="230" width="480" height="130" fill="#2A2420" opacity="0.18" />
+  <circle cx="380" cy="90" r="34" fill="#FBF6EE" opacity="0.5" />
+  <text x="240" y="335" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" letter-spacing="1" fill="#FBF6EE" opacity="0.85">PLACEHOLDER PHOTO 1</text>
+</svg>

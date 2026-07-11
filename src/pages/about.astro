@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About — Your Name" description="A bit more about who I am, beyond the résumé.">
+  <section
+    class="mx-auto max-w-5xl px-6 py-20 lg:grid lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-6"
+  >
+    <div class="lg:pr-6">
+      <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+        About
+      </p>
+      <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+        A little more about me
+      </h1>
+      <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
+        Placeholder: I grew up taking things apart to see how they worked, which is either a
+        good origin story for an engineer or a bad habit, depending who you ask (my parents
+        would say the latter). These days that same curiosity mostly points at brains — how
+        billions of noisy, imperfect cells manage to produce something as coherent as a memory
+        or a decision — but it still shows up in side projects, in my photography, and in
+        whatever I happen to be reading that week.
+      </p>
+      <p class="mt-5 max-w-lg text-lg leading-relaxed text-ink-soft">
+        Placeholder: I'm currently [year] studying [major] at [school], splitting my time
+        between a research lab, a handful of software projects, and a camera I take more
+        places than is strictly reasonable. I like collaborators who ask good questions more
+        than ones who already have all the answers, and I'm always up for a conversation about
+        neuroscience, machine learning, or where to find good light for a photo.
+      </p>
+    </div>
+
+    <div class="relative mt-16 lg:mt-0 lg:-mr-12 xl:-mr-24">
+      <div class="grid grid-cols-2 gap-5">
+        <img
+          src="/images/headshot.svg"
+          alt="Placeholder headshot — swap for a real photo"
+          width="480"
+          height="480"
+          class="col-span-2 w-full max-w-[15rem] -rotate-2 rounded-2xl border-8 border-white object-cover shadow-xl sm:col-span-1 sm:max-w-none"
+        />
+        <img
+          src="/images/personality-1.svg"
+          alt="Placeholder personality photo — swap for a real photo"
+          width="360"
+          height="480"
+          class="mt-6 w-full max-w-[10rem] rotate-3 justify-self-end rounded-2xl border-8 border-white object-cover shadow-xl sm:mt-0 sm:max-w-none sm:self-end"
+        />
+        <img
+          src="/images/personality-2.svg"
+          alt="Placeholder personality photo — swap for a real photo"
+          width="480"
+          height="360"
+          class="col-span-2 -mt-4 w-full max-w-[12rem] -rotate-1 justify-self-center rounded-2xl border-8 border-white object-cover shadow-xl sm:col-span-1 sm:mt-8 sm:max-w-none sm:justify-self-start"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

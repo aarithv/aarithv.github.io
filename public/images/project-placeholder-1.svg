@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Project thumbnail placeholder one">
+  <defs>
+    <linearGradient id="pbg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F3EAD9" />
+      <stop offset="100%" stop-color="#E0A480" />
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" fill="url(#pbg1)" />
+  <rect x="70" y="90" width="150" height="110" rx="10" fill="none" stroke="#2A2420" stroke-opacity="0.35" stroke-width="3" />
+  <circle cx="330" cy="150" r="55" fill="none" stroke="#2A2420" stroke-opacity="0.3" stroke-width="3" />
+  <text x="240" y="300" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" letter-spacing="1" fill="#2A2420" opacity="0.7">SWAP FOR SCREENSHOT — 1</text>
+</svg>

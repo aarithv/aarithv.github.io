@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Placeholder photo three">
+  <rect width="400" height="400" fill="#2A2420" />
+  <circle cx="200" cy="200" r="140" fill="none" stroke="#FBF6EE" stroke-opacity="0.5" stroke-width="3" />
+  <circle cx="200" cy="200" r="70" fill="#C1613C" opacity="0.75" />
+  <text x="200" y="360" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" letter-spacing="1" fill="#FBF6EE" opacity="0.75">PLACEHOLDER PHOTO 3</text>
+</svg>

@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, tech, images } = project.data;
+const thumbnail = images?.[0];
+---
+
+<a
+  href={`/projects/${project.id}/`}
+  class="group flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream-dark/40 transition-colors hover:border-terracotta/40"
+>
+  {
+    thumbnail && (
+      <div class="aspect-[4/3] w-full overflow-hidden bg-cream-dark">
+        <img
+          src={thumbnail}
+          alt={`${title} thumbnail`}
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+  <div class="flex flex-1 flex-col p-6">
+    <h2 class="font-serif text-lg font-semibold text-ink">{title}</h2>
+    <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">{summary}</p>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {
+        tech.map((t) => (
+          <li class="rounded-full bg-sage/10 px-2.5 py-1 text-xs font-medium text-sage-dark">{t}</li>
+        ))
+      }
+    </ul>
+  </div>
+</a>

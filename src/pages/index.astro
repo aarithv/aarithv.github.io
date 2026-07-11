@@ -1,17 +1,128 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 
+const highlights = [
+  {
+    kind: 'Research',
+    title: 'Synaptic plasticity & memory encoding',
+    blurb:
+      "Two years in the [Lab Name] lab studying how [placeholder mechanism] shapes long-term memory — presented at [placeholder conference].",
+    href: '/research',
+  },
+  {
+    kind: 'Project',
+    title: '[Placeholder Project One]',
+    blurb: 'A [placeholder stack] tool that [placeholder outcome], built over [placeholder timeframe].',
+    href: '/projects',
+  },
+  {
+    kind: 'Project',
+    title: '[Placeholder Project Two]',
+    blurb: 'A second project worth a closer look — swap in the real title and a one-line result.',
+    href: '/projects',
+  },
+];
+
+const explore = [
+  { label: 'About', href: '/about', blurb: 'Who I am, beyond the résumé.' },
+  { label: 'Research', href: '/research', blurb: 'Labs, questions, contributions.' },
+  { label: 'Projects', href: '/projects', blurb: "Things I've built end to end." },
+  { label: 'Awards', href: '/awards', blurb: 'Honors and fellowships.' },
+  { label: 'Resume', href: '/resume', blurb: 'The formal version, as a PDF.' },
+  { label: 'Photography', href: '/photography', blurb: "What I look at when I'm not working." },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="Your Name"
+  description="Neuroscience research, CS/EE projects, and photography — the personal site of Your Name."
+>
+  <section
+    class="mx-auto grid max-w-4xl gap-12 px-6 py-20 sm:grid-cols-[1.1fr_0.9fr] sm:items-center sm:gap-10"
+  >
+    <div>
+      <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+        Hi, I'm
+      </p>
+      <h1 class="font-serif text-5xl font-semibold leading-tight text-ink">Your Name</h1>
+      <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-soft">
+        Placeholder bio: I'm a [neuroscience / CS] researcher and builder — most days I'm in
+        lab measuring things that spike, or at a keyboard shipping something that (mostly)
+        works. I like problems that sit at the edge of two fields, and photographs that don't.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href="/projects"
+          class="rounded-full bg-terracotta-dark px-5 py-2.5 text-sm font-medium text-cream transition-opacity hover:opacity-90"
+        >
+          View projects
+        </a>
+        <a
+          href="/about"
+          class="rounded-full border border-sage px-5 py-2.5 text-sm font-medium text-sage-dark transition-colors hover:bg-sage/10"
+        >
+          About me
+        </a>
+      </div>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-xs sm:mx-0">
+      <div
+        aria-hidden="true"
+        class="absolute -inset-4 -z-10 rounded-[62%_38%_55%_45%/45%_40%_60%_55%] bg-sage/15"
+      >
+      </div>
+      <img
+        src="/images/headshot.svg"
+        alt="Placeholder headshot — swap for a real photo"
+        width="480"
+        height="480"
+        class="aspect-square w-full rounded-3xl border border-ink/10 object-cover shadow-sm"
+      />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-6 py-16">
+    <h2 class="font-serif text-2xl font-semibold text-ink">A few things worth a closer look</h2>
+    <p class="mt-2 max-w-xl text-ink-soft">
+      Placeholder highlights — swap in real research and project write-ups.
+    </p>
+
+    <div class="mt-8 grid gap-5 sm:grid-cols-3">
+      {
+        highlights.map((item) => (
+          <a
+            href={item.href}
+            class="group flex flex-col rounded-2xl border border-ink/10 bg-cream-dark/60 p-6 transition-colors hover:border-terracotta/40"
+          >
+            <span class="text-xs font-semibold uppercase tracking-wide text-terracotta-dark">
+              {item.kind}
+            </span>
+            <h3 class="mt-3 font-serif text-lg font-semibold text-ink">{item.title}</h3>
+            <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">{item.blurb}</p>
+            <span class="mt-4 text-sm font-medium text-ink-soft transition-colors group-hover:text-terracotta-dark">
+              Read more &rarr;
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-6 py-16">
+    <h2 class="font-serif text-2xl font-semibold text-ink">Find your way around</h2>
+    <div class="mt-8 grid gap-4 sm:grid-cols-3">
+      {
+        explore.map((item) => (
+          <a
+            href={item.href}
+            class="rounded-xl border border-ink/10 px-5 py-4 transition-colors hover:border-sage hover:bg-sage/5"
+          >
+            <p class="font-serif text-base font-semibold text-ink">{item.label}</p>
+            <p class="mt-1 text-sm text-ink-soft">{item.blurb}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

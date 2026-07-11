@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, tech, role, links, images } = project.data;
+const { Content } = await render(project);
+
+// Most link-preview crawlers don't render SVG for og:image — only use a
+// project thumbnail if it's a raster format, otherwise fall back to the
+// site default.
+const ogImage = images?.[0] && !images[0].endsWith('.svg') ? images[0] : undefined;
+---
+
+<BaseLayout
+  title={`${title} — Your Name`}
+  description={summary}
+  image={ogImage}
+>
+  <article class="mx-auto max-w-3xl px-6 py-20">
+    <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+      Project
+    </p>
+    <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">{title}</h1>
+    <p class="mt-4 text-lg leading-relaxed text-ink-soft">{summary}</p>
+
+    {
+      images?.[0] && (
+        <img
+          src={images[0]}
+          alt={`${title} screenshot`}
+          class="mt-8 w-full rounded-2xl border border-ink/10 object-cover shadow-sm"
+        />
+      )
+    }
+
+    <div class="mt-8 flex flex-wrap items-start gap-x-10 gap-y-5 border-y border-ink/10 py-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-ink-soft">Role</p>
+        <p class="mt-1 text-sm text-ink">{role}</p>
+      </div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-ink-soft">Tech &amp; methods</p>
+        <ul class="mt-2 flex flex-wrap gap-2">
+          {
+            tech.map((t) => (
+              <li class="rounded-full bg-sage/10 px-2.5 py-1 text-xs font-medium text-sage-dark">
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      {
+        links && (Object.keys(links).length > 0) && (
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-ink-soft">Links</p>
+            <div class="mt-2 flex flex-wrap gap-4 text-sm font-medium">
+              {links.github && (
+                <a href={links.github} class="text-terracotta-dark transition-colors hover:underline">
+                  GitHub &rarr;
+                </a>
+              )}
+              {links.demo && (
+                <a href={links.demo} class="text-terracotta-dark transition-colors hover:underline">
+                  Demo &rarr;
+                </a>
+              )}
+              {links.writeup && (
+                <a href={links.writeup} class="text-terracotta-dark transition-colors hover:underline">
+                  Write-up &rarr;
+                </a>
+              )}
+            </div>
+          </div>
+        )
+      }
+    </div>
+
+    <div
+      class="mt-10 space-y-5 text-ink-soft [&_a]:text-terracotta-dark [&_a]:underline [&_a]:decoration-terracotta-dark/40 [&_a]:underline-offset-2 [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-ink [&_h3]:mt-6 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-ink [&_li]:leading-relaxed [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+    >
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

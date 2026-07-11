@@ -1,0 +1,27 @@
+---
+const links = [
+  { label: 'Email', href: 'mailto:you@example.com' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/your-handle' },
+  { label: 'GitHub', href: 'https://github.com/your-handle' },
+  { label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=your-id' },
+];
+---
+
+<footer class="border-t border-ink/10">
+  <div
+    class="mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 py-10 text-sm text-ink-soft sm:flex-row sm:justify-between"
+  >
+    <p>&copy; {new Date().getFullYear()} Your Name</p>
+    <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="transition-colors hover:text-terracotta-dark">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>

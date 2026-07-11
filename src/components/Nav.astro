@@ -1,0 +1,125 @@
+---
+const links = [
+  { href: '/about', label: 'About' },
+  { href: '/research', label: 'Research' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/awards', label: 'Awards' },
+  { href: '/resume', label: 'Resume' },
+  { href: '/photography', label: 'Photography' },
+];
+---
+
+<header class="relative border-b border-ink/10">
+  <nav class="mx-auto flex max-w-4xl items-center justify-between px-6 py-6">
+    <a href="/" class="font-serif text-xl font-semibold text-ink">Your Name</a>
+
+    <ul class="hidden gap-x-6 text-sm md:flex">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="text-ink-soft transition-colors hover:text-terracotta-dark">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <button
+      id="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-mobile-menu"
+      class="flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/5 md:hidden"
+    >
+      <span class="sr-only">Toggle menu</span>
+      <svg
+        id="nav-icon-open"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3 5H17M3 10H17M3 15H17"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+      <svg
+        id="nav-icon-close"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden"
+      >
+        <path
+          d="M4 4L16 16M16 4L4 16"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+    </button>
+  </nav>
+
+  <ul
+    id="nav-mobile-menu"
+    class="hidden flex-col gap-1 border-t border-ink/10 px-6 py-4 text-sm md:hidden"
+  >
+    {
+      links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="block rounded-md px-2 py-2 text-ink-soft transition-colors hover:bg-sage/10 hover:text-terracotta-dark"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</header>
+
+<script>
+  const toggle = document.querySelector('#nav-toggle');
+  const menu = document.querySelector('#nav-mobile-menu');
+  const iconOpen = document.querySelector('#nav-icon-open');
+  const iconClose = document.querySelector('#nav-icon-close');
+
+  function closeMenu() {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.classList.add('hidden');
+    menu.classList.remove('flex');
+    iconOpen?.classList.remove('hidden');
+    iconClose?.classList.add('hidden');
+  }
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        closeMenu();
+      } else {
+        toggle.setAttribute('aria-expanded', 'true');
+        menu.classList.remove('hidden');
+        menu.classList.add('flex');
+        iconOpen?.classList.add('hidden');
+        iconClose?.classList.remove('hidden');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        closeMenu();
+        toggle.focus();
+      }
+    });
+  }
+</script>

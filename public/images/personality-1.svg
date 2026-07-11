@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" role="img" aria-label="Personality photo placeholder one">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E7C9B4" />
+      <stop offset="100%" stop-color="#C1613C" stop-opacity="0.55" />
+    </linearGradient>
+  </defs>
+  <rect width="360" height="480" fill="url(#bg1)" />
+  <circle cx="180" cy="200" r="70" fill="none" stroke="#2A2420" stroke-opacity="0.35" stroke-width="3" />
+  <circle cx="180" cy="200" r="30" fill="#2A2420" opacity="0.25" />
+  <text x="180" y="430" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" letter-spacing="1" fill="#2A2420" opacity="0.7">SWAP FOR PHOTO — 1</text>
+</svg>

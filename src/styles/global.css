@@ -1,1 +1,17 @@
+@config "../../tailwind.config.mjs";
 @import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-cream text-ink font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+  }
+}

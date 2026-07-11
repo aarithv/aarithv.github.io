@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-label="Placeholder photo four">
+  <defs>
+    <linearGradient id="g4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F3EAD9" />
+      <stop offset="100%" stop-color="#AEBBA0" />
+    </linearGradient>
+  </defs>
+  <rect width="480" height="320" fill="url(#g4)" />
+  <path d="M0 260 L120 140 L200 220 L300 90 L480 260 Z" fill="#2A2420" opacity="0.22" />
+  <text x="240" y="295" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" letter-spacing="1" fill="#2A2420" opacity="0.7">PLACEHOLDER PHOTO 4</text>
+</svg>
