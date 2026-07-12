@@ -5,19 +5,19 @@ import PhotoGrid from '../components/PhotoGrid.astro';
 // public/ isn't part of Vite's module graph, so it can't be globbed at build
 // time — list filenames here. Adding a real photo is a one-line addition.
 const photoFiles = [
-  { filename: 'bos_street_shot_1.jpeg', alt: 'Street scene in Boston' },
-  { filename: 'bos_street_shot_2.jpeg', alt: 'Street scene in Boston' },
-  { filename: 'newp_umbrellas.jpeg', alt: 'Umbrellas in Newport' },
-  { filename: 'prov_skyline_1.jpeg', alt: 'Providence skyline' },
-  { filename: 'prov_river_pink_sunset.jpeg', alt: 'Pink sunset over the river in Providence' },
-  { filename: 'bris_park_sunset.jpeg', alt: 'Sunset over a park in Bristol' },
-  { filename: 'bris_rest_sunset.jpeg', alt: 'Sunset view from a restaurant in Bristol' },
-  { filename: 'warr_park_sun.jpeg', alt: 'Sunlight in a park in Warren' },
-  { filename: 'warr_park_sunset_1.jpeg', alt: 'Sunset in a park in Warren' },
-  { filename: 'warr_park_sunset_2.jpeg', alt: 'Sunset in a park in Warren' },
-  { filename: 'warr_park_sunset_3.jpeg', alt: 'Sunset in a park in Warren' },
-  { filename: 'pv_beach.jpeg', alt: 'Beach view' },
-  { filename: 'pv_inf_pool.jpeg', alt: 'Infinity pool overlooking the water' },
+  { filename: 'warr_park_sunset_2.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'prov_river_pink_sunset.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'pv_beach.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'bos_street_shot_2.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'bris_rest_sunset.jpeg', alt: 'iPhone 16' },
+  { filename: 'warr_park_sun.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'newp_umbrellas.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'pv_inf_pool.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'bos_street_shot_1.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'warr_park_sunset_3.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'prov_skyline_1.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'bris_park_sunset.jpeg', alt: 'Sony ZV-1' },
+  { filename: 'warr_park_sunset_1.jpeg', alt: 'Sony ZV-1' },
 ];
 
 const photos = photoFiles.map(({ filename, alt }) => ({
@@ -28,17 +28,17 @@ const photos = photoFiles.map(({ filename, alt }) => ({
 
 <BaseLayout
   title="Photography — Aarith Veerabhadran"
-  description="What I look at when I'm not working."
+  description="Some of my favorite shots"
 >
   <section class="mx-auto max-w-4xl px-6 py-20">
     <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
       Photography
     </p>
     <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-      What I look at when I'm not working
+      Some of my favorite shots
     </h1>
     <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
-      A few shots from around, and some from further afield.
+      Shot on (mostly) a Sony ZV-1
     </p>
 
     <div class="mt-12">
