@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 const entries = (await getCollection('awards')).sort((a, b) => b.data.year - a.data.year);
 ---
 
-<BaseLayout title="Awards — Your Name" description="Honors, scholarships, and fellowships.">
+<BaseLayout title="Awards — Aarith Veerabhadran" description="Honors, scholarships, and fellowships.">
   <section class="mx-auto max-w-3xl px-6 py-20">
     <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
       Awards
