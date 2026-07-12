@@ -16,7 +16,8 @@ const { photos } = Astro.props;
     photos.map((photo, index) => (
       <button
         type="button"
-        class="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-xl border border-ink/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
+        class="photo-fade group mb-4 block w-full translate-y-4 opacity-0 break-inside-avoid overflow-hidden rounded-xl border border-ink/10 transition-all duration-700 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta"
+        style={`transition-delay: ${(index % 3) * 80}ms`}
         data-lightbox-index={index}
         data-full-src={photo.src}
         data-alt={photo.alt}
@@ -31,3 +32,48 @@ const { photos } = Astro.props;
     ))
   }
 </div>
+
+<noscript>
+  <style>
+    .photo-fade {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  </style>
+</noscript>
+
+<style>
+  .photo-fade.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo-fade {
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  const items = document.querySelectorAll('.photo-fade');
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+    items.forEach((item) => observer.observe(item));
+  } else {
+    items.forEach((item) => item.classList.add('is-visible'));
+  }
+</script>
