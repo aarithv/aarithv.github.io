@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const documents = [
+  { label: 'Resume', href: '/av_resume_071226.pdf' },
+  { label: 'Awards & Publications', href: '/av_awards_071226.pdf' },
+];
+---
+
+<BaseLayout
+  title="Resume — Aarith Veerabhadran"
+  description="Resume and a list of awards and publications, viewable in-browser or as a download."
+>
+  <section class="mx-auto max-w-4xl px-6 py-20">
+    <p class="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-terracotta-dark">
+      Resume
+    </p>
+    <h1 class="font-serif text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+      The formal version
+    </h1>
+    <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
+      View in-browser below, or download a copy.
+    </p>
+
+    <div class="mt-12 space-y-16">
+      {
+        documents.map((doc) => (
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <h2 class="font-serif text-2xl font-semibold text-ink">{doc.label}</h2>
+              <div class="flex gap-3">
+                <a
+                  href={doc.href}
+                  target="_blank"
+                  rel="noopener"
+                  class="rounded-full border border-sage px-4 py-2 text-sm font-medium text-sage-dark transition-colors hover:bg-sage/10"
+                >
+                  Open in new tab
+                </a>
+                <a
+                  href={doc.href}
+                  download
+                  class="rounded-full bg-terracotta-dark px-4 py-2 text-sm font-medium text-cream transition-opacity hover:opacity-90"
+                >
+                  Download
+                </a>
+              </div>
+            </div>
+            <div class="mt-4 overflow-hidden rounded-2xl border border-ink/10 shadow-sm">
+              <iframe src={doc.href} title={doc.label} class="h-[80vh] w-full" />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
