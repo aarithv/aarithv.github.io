@@ -4,11 +4,25 @@ import PhotoGrid from '../components/PhotoGrid.astro';
 
 // public/ isn't part of Vite's module graph, so it can't be globbed at build
 // time — list filenames here. Adding a real photo is a one-line addition.
-const filenames = ['photo-1.svg', 'photo-2.svg', 'photo-3.svg', 'photo-4.svg', 'photo-5.svg'];
+const photoFiles = [
+  { filename: 'bos_street_shot_1.jpeg', alt: 'Street scene in Boston' },
+  { filename: 'bos_street_shot_2.jpeg', alt: 'Street scene in Boston' },
+  { filename: 'newp_umbrellas.jpeg', alt: 'Umbrellas in Newport' },
+  { filename: 'prov_skyline_1.jpeg', alt: 'Providence skyline' },
+  { filename: 'prov_river_pink_sunset.jpeg', alt: 'Pink sunset over the river in Providence' },
+  { filename: 'bris_park_sunset.jpeg', alt: 'Sunset over a park in Bristol' },
+  { filename: 'bris_rest_sunset.jpeg', alt: 'Sunset view from a restaurant in Bristol' },
+  { filename: 'warr_park_sun.jpeg', alt: 'Sunlight in a park in Warren' },
+  { filename: 'warr_park_sunset_1.jpeg', alt: 'Sunset in a park in Warren' },
+  { filename: 'warr_park_sunset_2.jpeg', alt: 'Sunset in a park in Warren' },
+  { filename: 'warr_park_sunset_3.jpeg', alt: 'Sunset in a park in Warren' },
+  { filename: 'pv_beach.jpeg', alt: 'Beach view' },
+  { filename: 'pv_inf_pool.jpeg', alt: 'Infinity pool overlooking the water' },
+];
 
-const photos = filenames.map((filename, index) => ({
+const photos = photoFiles.map(({ filename, alt }) => ({
   src: `/images/photography/${filename}`,
-  alt: `Placeholder photo ${index + 1} — swap for a real photo`,
+  alt,
 }));
 ---
 
@@ -24,8 +38,7 @@ const photos = filenames.map((filename, index) => ({
       What I look at when I'm not working
     </h1>
     <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
-      Placeholder intro — swap in a real set of 10&ndash;20 images, organized by theme or
-      roughly chronologically.
+      A few shots from around, and some from further afield.
     </p>
 
     <div class="mt-12">
