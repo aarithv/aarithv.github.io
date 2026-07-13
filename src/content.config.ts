@@ -31,7 +31,7 @@ const research = defineCollection({
       .array(
         z.object({
           label: z.string(),
-          url: z.string().url(),
+          url: z.string(),
         })
       )
       .optional(),
