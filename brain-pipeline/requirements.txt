@@ -1,0 +1,5 @@
+nilearn
+trimesh
+scikit-image
+scipy
+fast-simplification

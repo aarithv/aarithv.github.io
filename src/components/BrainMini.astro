@@ -1,0 +1,169 @@
+---
+import { getSections, plateFor } from '../data/content';
+import coords from '../data/brain-coords.json';
+
+interface Props {
+  region: string;
+  class?: string;
+}
+
+const { region: id, class: className } = Astro.props;
+const region = (await getSections()).find((r) => r.id === id)!;
+const mni = (coords as Record<string, Record<string, number[]>>)[id];
+const fmt = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : '0');
+---
+
+<figure class:list={['brain-mini atlas-frame relative', className]} data-brain-mini={id}>
+  <div class="mini-stage relative">
+    <canvas class="mini-canvas block h-full w-full" aria-hidden="true"></canvas>
+    <span class="mini-plate pointer-events-none absolute left-3 top-2.5 text-xs uppercase tracking-[0.1em] tabular-nums text-phosphor-dim">
+      {plateFor(region)}
+    </span>
+  </div>
+  <figcaption class="border-t border-phosphor-600/30 px-3 py-2.5 text-xs leading-relaxed">
+    <span class="block text-phosphor-400">{region.structure}</span>
+    {mni && (
+      <span class="mt-0.5 block tabular-nums text-phosphor-dim">
+        MNI&ensp;{mni.left && <>L {mni.left.map(fmt).join(' ')}</>}
+        {mni.left && mni.right && <span class="text-phosphor-600"> · </span>}
+        {mni.right && <>R {mni.right.map(fmt).join(' ')}</>}
+      </span>
+    )}
+  </figcaption>
+</figure>
+
+<style>
+  .mini-stage {
+    aspect-ratio: 4 / 3;
+  }
+  .mini-canvas {
+    /* Opaque black canvas, screened so the black drops out; feathered edges. */
+    mix-blend-mode: screen;
+    mask-image: radial-gradient(closest-side, black 78%, transparent);
+    cursor: grab;
+    touch-action: pan-y;
+  }
+  .mini-canvas:active {
+    cursor: grabbing;
+  }
+</style>
+
+<script>
+  // The page's own region on the real brain (same anatomy as the home page,
+  // lighter mesh): that structure glows and breathes, the rest of the brain
+  // stays a faint shell, and it turns slowly. Drag to turn it.
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { regions } from '../data/regions';
+  import { hologramMaterial, meshName } from '../lib/brainShader';
+
+  document.querySelectorAll<HTMLElement>('[data-brain-mini]').forEach((root) => {
+    const canvas = root.querySelector<HTMLCanvasElement>('.mini-canvas')!;
+    const stage = root.querySelector<HTMLElement>('.mini-stage')!;
+    const current = regions.find((r) => r.id === root.dataset.brainMini);
+    if (!current) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setClearColor(0x000000, 1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 4 / 3, 0.1, 50);
+    camera.position.set(0, 0, 3.3);
+    const brain = new THREE.Group();
+    scene.add(brain);
+
+    const materials: THREE.ShaderMaterial[] = [];
+    let lit: THREE.ShaderMaterial | null = null;
+    let ready = false;
+
+    new GLTFLoader().load('/brain/brain-lite.glb', (gltf) => {
+      const meshes: THREE.Mesh[] = [];
+      gltf.scene.traverse((o) => {
+        if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh);
+      });
+      const cortex = meshes.find((m) => meshName(m) === 'cortex');
+      const center = new THREE.Box3().setFromObject(cortex ?? gltf.scene).getCenter(new THREE.Vector3());
+      meshes.forEach((mesh) => {
+        const name = meshName(mesh);
+        mesh.geometry.translate(-center.x, -center.y, -center.z);
+        mesh.geometry.computeVertexNormals();
+        const isCurrent = name === current.id;
+        // Other regions are kept, faintly, so the lit one reads in context.
+        const material =
+          name === 'cortex' ? hologramMaterial(0.0, 0.09) : isCurrent ? hologramMaterial(0.12, 0.6) : hologramMaterial(0.01, 0.08);
+        if (isCurrent) lit = material;
+        mesh.material = material;
+        mesh.renderOrder = isCurrent ? 2 : 1;
+        materials.push(material);
+        brain.add(mesh);
+      });
+      ready = true;
+      resize();
+    });
+
+    // Yaw 0 is a left-lateral view; start on the view that best shows this structure.
+    const BASE_YAW = Math.PI / 2;
+    const rot = { yaw: current.view.yaw, pitch: current.view.pitch };
+    const target = { ...rot };
+
+    function resize() {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      if (reduceMotion) render(0);
+    }
+    new ResizeObserver(resize).observe(stage);
+
+    let onScreen = true;
+    new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(stage);
+
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    canvas.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      target.yaw += (e.clientX - lastX) * 0.01;
+      if (e.pointerType === 'mouse') target.pitch = THREE.MathUtils.clamp(target.pitch + (e.clientY - lastY) * 0.008, -0.9, 0.9);
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (reduceMotion) render(performance.now());
+    });
+    const stop = () => (dragging = false);
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointercancel', stop);
+
+    const start = performance.now();
+    function render(now: number) {
+      if (!ready) return;
+      const t = (now - start) / 1000;
+      materials.forEach((m) => (m.uniforms.uTime.value = t));
+      // The structure breathes: a slow pulse in brightness.
+      if (lit) lit.uniforms.uLit.value = reduceMotion ? 0.8 : 0.65 + 0.35 * Math.sin(t * 2.2);
+      rot.yaw += (target.yaw - rot.yaw) * 0.1;
+      rot.pitch += (target.pitch - rot.pitch) * 0.1;
+      brain.rotation.set(rot.pitch, BASE_YAW + rot.yaw, 0, 'XYZ');
+      renderer.render(scene, camera);
+    }
+
+    if (!reduceMotion) {
+      const loop = (now: number) => {
+        if (onScreen) {
+          if (!dragging) target.yaw += 0.003;
+          render(now);
+        }
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+  });
+</script>

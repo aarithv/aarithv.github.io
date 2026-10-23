@@ -1,0 +1,936 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import AsciiPanel from '../../components/AsciiPanel.astro';
+import { getPage } from '../../data/content';
+
+const page = await getPage('gradients');
+
+const views = [
+  { id: '3d', label: '3D' },
+  { id: 'xy', label: 'G1 × G2' },
+  { id: 'xz', label: 'G1 × G3' },
+  { id: 'yz', label: 'G2 × G3' },
+];
+---
+
+<BaseLayout title={page.title} description={page.description} noindex>
+  <PageHeader title={page.title ?? 'Gradient viewer'}>{page.hasBody && <page.Content />}</PageHeader>
+
+  <div class="mx-auto grid max-w-6xl gap-10 px-5 pb-28 sm:px-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-start">
+    <AsciiPanel title="INPUT" meta="400 × 3">
+      <form class="gv-form flex flex-col gap-4" novalidate>
+        <label for="gv-data" class="text-sm leading-relaxed text-phosphor-dim">
+          One point per line as <span class="text-phosphor-500">g1, g2, g3</span>, or three lines of 400 values
+          (one gradient per line). Commas, tabs or spaces all work; a header line is skipped. For a time series,
+          load several files or a folder: one file per timepoint, in file-name order.
+        </label>
+        <textarea
+          id="gv-data"
+          class="gv-input h-72 w-full resize-y border border-phosphor-600/50 bg-crt-black p-3 text-xs leading-relaxed tabular-nums text-phosphor-500"
+          spellcheck="false"
+          autocomplete="off"
+          placeholder={'0.412, -1.083, 0.227\n0.398, -0.951, 0.310\n…'}
+        ></textarea>
+
+        <div class="flex flex-wrap gap-3">
+          <button type="submit" class="btn btn-solid">Plot</button>
+          <label class="btn cursor-pointer">
+            Load files
+            <input type="file" multiple accept=".csv,.tsv,.txt,text/plain,text/csv" class="gv-file sr-only" />
+          </label>
+          <label class="btn cursor-pointer">
+            Load folder
+            <input type="file" multiple webkitdirectory class="gv-folder sr-only" />
+          </label>
+        </div>
+        <div class="flex flex-wrap gap-x-5 gap-y-2 text-xs">
+          <button type="button" class="gv-sample link">Load a random sample</button>
+          <button type="button" class="gv-clear link">Clear</button>
+        </div>
+
+        <p class="gv-status min-h-[3rem] text-sm leading-relaxed" role="status" aria-live="polite"></p>
+      </form>
+    </AsciiPanel>
+
+    <AsciiPanel title="GRADIENT SPACE" meta="drag to rotate">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2" role="group" aria-label="View">
+          {views.map((v, i) => (
+            <button type="button" class:list={['gv-view chip', { 'is-on': i === 0 }]} data-view={v.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-xs text-phosphor-dim">
+          <label class="flex items-center gap-2">
+            Point size
+            <input type="range" min="2" max="14" step="1" value="6" class="gv-size" />
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="gv-spin" />
+            Auto-rotate
+          </label>
+          <button type="button" class="gv-reset link">Reset view</button>
+        </div>
+      </div>
+
+      <div class="gv-time mt-4 hidden flex-wrap items-center gap-x-4 gap-y-3">
+        <button type="button" class="gv-play chip inline-flex items-center gap-2" aria-pressed="false">
+          <svg viewBox="0 0 12 12" class="h-3 w-3" aria-hidden="true">
+            <path class="icon-play" d="M3 2l7 4-7 4z" fill="currentColor" />
+            <path class="icon-pause" d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor" />
+          </svg>
+          <span class="gv-play-label">Play</span>
+        </button>
+        <input type="range" min="1" max="1" step="1" value="1" class="gv-scrub" aria-label="Timepoint" />
+        <span class="gv-readout min-w-[9rem] text-xs tabular-nums text-phosphor-400"></span>
+        <label class="flex items-center gap-2 text-xs text-phosphor-dim">
+          Speed
+          <select class="gv-speed">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="gv-stage relative mt-4 border border-phosphor-600/40 bg-crt-void">
+        <canvas class="gv-canvas block h-full w-full"></canvas>
+        <div class="gv-labels pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true"></div>
+        <p class="gv-tip pointer-events-none absolute hidden border border-phosphor-500/60 bg-crt-void/90 px-2.5 py-1.5 text-xs tabular-nums"></p>
+        <div class="gv-empty pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
+          <p class="font-terminal text-2xl text-phosphor-400">No data plotted yet</p>
+          <p class="max-w-[40ch] text-sm text-phosphor-dim">Paste your matrix and press Plot, or load a random sample to try it.</p>
+        </div>
+      </div>
+
+      <dl class="gv-stats mt-5 grid gap-x-8 gap-y-3 text-xs tabular-nums sm:grid-cols-3"></dl>
+    </AsciiPanel>
+  </div>
+</BaseLayout>
+
+<style>
+  .gv-input:focus-visible {
+    outline-offset: 0;
+    border-color: var(--color-phosphor-400);
+  }
+  .gv-input::placeholder {
+    color: color-mix(in srgb, var(--color-phosphor-dim) 55%, transparent);
+  }
+  .gv-stage {
+    height: min(72svh, 40rem);
+    min-height: 22rem;
+  }
+  @media (max-width: 639px) {
+    .gv-stage {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 1;
+    }
+  }
+  .gv-canvas {
+    cursor: grab;
+    touch-action: none;
+  }
+  .gv-canvas:active {
+    cursor: grabbing;
+  }
+  .chip {
+    min-height: 36px;
+    padding: 0 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--color-phosphor-600) 55%, transparent);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--color-phosphor-dim);
+    transition:
+      border-color 160ms ease-out,
+      background-color 160ms ease-out,
+      color 160ms ease-out;
+  }
+  .chip:hover {
+    border-color: var(--color-phosphor-400);
+    color: var(--color-phosphor-400);
+  }
+  .chip.is-on {
+    border-color: var(--color-phosphor-500);
+    background-color: color-mix(in srgb, var(--color-phosphor-500) 14%, transparent);
+    color: var(--color-phosphor-400);
+  }
+  input[type='range'] {
+    accent-color: var(--color-phosphor-500);
+    width: 6rem;
+  }
+  /* The timepoint slider takes whatever the row has left. */
+  .gv-scrub {
+    flex: 1 1 12rem;
+    width: auto;
+    min-width: 10rem;
+  }
+  .gv-time.is-shown {
+    display: flex;
+  }
+  .gv-speed {
+    min-height: 36px;
+    padding: 0 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--color-phosphor-600) 55%, transparent);
+    background: var(--color-crt-black);
+    color: var(--color-phosphor-400);
+    font-size: 0.75rem;
+  }
+  .gv-play .icon-pause,
+  .gv-play[aria-pressed='true'] .icon-play {
+    display: none;
+  }
+  .gv-play[aria-pressed='true'] .icon-pause {
+    display: inline;
+  }
+  input[type='checkbox'] {
+    accent-color: var(--color-phosphor-500);
+    width: 14px;
+    height: 14px;
+  }
+  .gv-status.is-error {
+    color: var(--color-phosphor-300);
+  }
+  .gv-status.is-error::before {
+    content: 'Error — ';
+    font-weight: 700;
+  }
+  :global(.gv-tick) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.75rem;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-phosphor-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  :global(.gv-axis) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-terminal);
+    font-size: 1.25rem;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-phosphor-400);
+  }
+</style>
+
+<script>
+  // Gradient viewer: parse a 400 × 3 (or 3 × 400) matrix of doubles and draw
+  // it as a 3D scatter. Data axes are gradient 1 → x, gradient 2 → y,
+  // gradient 3 → z, with z drawn vertical; each axis is scaled to its own
+  // range so all three fill the cube, and the tick labels show real values.
+  //
+  // Several files (or a folder) load as a time series: one matrix per
+  // timepoint, ordered by file name, with row i being the same point at every
+  // timepoint. Axis ranges span the whole series so the axes stay put while
+  // the points glide between timepoints.
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const EXPECTED = 400;
+  const STORAGE_KEY = 'gradient-viewer:input';
+
+  const form = document.querySelector<HTMLFormElement>('.gv-form')!;
+  const input = document.querySelector<HTMLTextAreaElement>('#gv-data')!;
+  const fileInput = document.querySelector<HTMLInputElement>('.gv-file')!;
+  const status = document.querySelector<HTMLElement>('.gv-status')!;
+  const stage = document.querySelector<HTMLElement>('.gv-stage')!;
+  const canvas = document.querySelector<HTMLCanvasElement>('.gv-canvas')!;
+  const labelLayer = document.querySelector<HTMLElement>('.gv-labels')!;
+  const tip = document.querySelector<HTMLElement>('.gv-tip')!;
+  const empty = document.querySelector<HTMLElement>('.gv-empty')!;
+  const stats = document.querySelector<HTMLElement>('.gv-stats')!;
+  const sizeInput = document.querySelector<HTMLInputElement>('.gv-size')!;
+  const spinInput = document.querySelector<HTMLInputElement>('.gv-spin')!;
+  const folderInput = document.querySelector<HTMLInputElement>('.gv-folder')!;
+  const timeRow = document.querySelector<HTMLElement>('.gv-time')!;
+  const playButton = document.querySelector<HTMLButtonElement>('.gv-play')!;
+  const playLabel = document.querySelector<HTMLElement>('.gv-play-label')!;
+  const scrub = document.querySelector<HTMLInputElement>('.gv-scrub')!;
+  const readout = document.querySelector<HTMLElement>('.gv-readout')!;
+  const speedInput = document.querySelector<HTMLSelectElement>('.gv-speed')!;
+  const PLACEHOLDER = input.placeholder;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Parsing ----------
+  type Parsed = { points: number[][]; note: string } | { error: string };
+
+  function parse(text: string): Parsed {
+    const trimmed = text.trim();
+    if (!trimmed) return { error: 'There is no data to plot yet.' };
+
+    let rows: number[][];
+    if (trimmed.startsWith('[')) {
+      try {
+        const json = JSON.parse(trimmed);
+        if (!Array.isArray(json) || !json.every(Array.isArray)) throw new Error();
+        rows = json.map((row: unknown[]) => row.map(Number));
+      } catch {
+        return { error: 'That looks like JSON but is not an array of arrays, e.g. [[g1, g2, g3], …].' };
+      }
+    } else {
+      const lines = trimmed.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      // A first line containing letters (other than exponent notation) is a header.
+      if (lines.length && /[a-df-z]/i.test(lines[0].replace(/[eE][+-]?\d/g, ''))) lines.shift();
+      rows = [];
+      for (let i = 0; i < lines.length; i++) {
+        const tokens = lines[i].split(/[\s,;]+/).filter(Boolean);
+        const values = tokens.map(Number);
+        const bad = values.findIndex((v) => !Number.isFinite(v));
+        if (bad !== -1) return { error: `Line ${i + 1}: "${tokens[bad]}" is not a number.` };
+        rows.push(values);
+      }
+    }
+    if (rows.some((r) => r.some((v) => !Number.isFinite(v)))) return { error: 'Every value must be a finite number.' };
+    if (rows.length === 0) return { error: 'There is no data to plot yet.' };
+
+    let points: number[][];
+    let shape: string;
+    const allThree = rows.every((r) => r.length === 3);
+    if (rows.length === 3 && rows[0].length === rows[1].length && rows[1].length === rows[2].length && rows[0].length > 0) {
+      // Three rows: one gradient per row, one point per column.
+      points = rows[0].map((_, j) => [rows[0][j], rows[1][j], rows[2][j]]);
+      shape = `3 rows × ${rows[0].length} values`;
+    } else if (allThree) {
+      points = rows;
+      shape = `${rows.length} rows × 3 columns`;
+    } else {
+      const off = rows.findIndex((r) => r.length !== 3);
+      return {
+        error: `Line ${off + 1} has ${rows[off].length} values. Use 3 per line (400 × 3), or 3 lines of equal length (3 × 400).`,
+      };
+    }
+
+    const note =
+      points.length === EXPECTED
+        ? `${points.length} points plotted (${shape}).`
+        : `${points.length} points plotted (${shape}). The viewer expects ${EXPECTED}; check nothing was cut off.`;
+    return { points, note };
+  }
+
+  // ---------- Scene ----------
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setClearColor(0x000000, 1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+  const HOME = new THREE.Vector3(3.4, 2.4, 4.2);
+  camera.position.copy(HOME);
+
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 1.5;
+  controls.maxDistance = 14;
+  controls.autoRotateSpeed = 1.2;
+
+  const green = new THREE.Color(0x00ff41);
+  const lineMat = (opacity: number) => new THREE.LineBasicMaterial({ color: green, transparent: true, opacity });
+
+  // Unit cube frame plus floor and back-wall grids.
+  scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2, 2, 2)), lineMat(0.35)));
+  const grid = (rotate: (g: THREE.GridHelper) => void) => {
+    const g = new THREE.GridHelper(2, 8, green, green);
+    (g.material as THREE.Material).transparent = true;
+    (g.material as THREE.Material).opacity = 0.1;
+    rotate(g);
+    scene.add(g);
+  };
+  grid((g) => g.position.set(0, -1, 0));
+  grid((g) => {
+    g.rotation.x = Math.PI / 2;
+    g.position.set(0, 0, -1);
+  });
+  grid((g) => {
+    g.rotation.z = Math.PI / 2;
+    g.position.set(-1, 0, 0);
+  });
+
+  const pointMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: green },
+      uSize: { value: 6 },
+      uScale: { value: 1 },
+    },
+    vertexShader: /* glsl */ `
+      uniform float uSize;
+      uniform float uScale;
+      attribute float aHot;
+      varying float vDepth;
+      varying float vHot;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = uSize * uScale * (1.0 + aHot * 1.2) / -mv.z;
+        vDepth = clamp((-mv.z - 2.0) / 6.0, 0.0, 1.0);
+        vHot = aHot;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      varying float vDepth;
+      varying float vHot;
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        float edge = smoothstep(0.5, 0.35, d);
+        float shade = mix(1.0, 0.45, vDepth);
+        vec3 c = mix(uColor * shade, vec3(0.8, 1.0, 0.85), vHot);
+        gl_FragColor = vec4(c, edge);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+  });
+
+  // ---------- Series state ----------
+  type Timepoint = { name: string; points: number[][] };
+  let series: Timepoint[] = [];
+  let current = 0;
+  let cloud: THREE.Points | null = null;
+  let ranges: { min: number; max: number }[] = [];
+  let hot = -1;
+  // Scene-space positions of every point at every timepoint, built once per series.
+  let scenePos: Float32Array[] = [];
+  // Glide state: positions on screen when the move started, and the target timepoint.
+  let tween: { from: Float32Array; to: Float32Array; start: number } | null = null;
+  const TWEEN_MS = 350;
+
+  // Data (g1, g2, g3) → scene (x, y up, z toward viewer): x = g1, up = g3,
+  // depth = −g2, a proper rotation of the usual right-handed x/y/z plot.
+  const norm = (v: number, axis: number) => {
+    const { min, max } = ranges[axis];
+    return max === min ? 0 : ((v - min) / (max - min)) * 2 - 1;
+  };
+  const toScene = (p: number[]) => new THREE.Vector3(norm(p[0], 0), norm(p[2], 2), -norm(p[1], 1));
+
+  function loadSeries(next: Timepoint[]) {
+    pause();
+    series = next;
+    current = 0;
+    ranges = [0, 1, 2].map((a) => {
+      let min = Infinity;
+      let max = -Infinity;
+      series.forEach(({ points }) =>
+        points.forEach((p) => {
+          min = Math.min(min, p[a]);
+          max = Math.max(max, p[a]);
+        })
+      );
+      return { min, max };
+    });
+    scenePos = series.map(({ points }) => {
+      const out = new Float32Array(points.length * 3);
+      points.forEach((p, i) => toScene(p).toArray(out, i * 3));
+      return out;
+    });
+
+    const count = series[0].points.length;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(scenePos[0].slice(), 3));
+    geometry.setAttribute('aHot', new THREE.BufferAttribute(new Float32Array(count), 1));
+    geometry.computeBoundingSphere();
+
+    if (cloud) {
+      cloud.geometry.dispose();
+      scene.remove(cloud);
+    }
+    cloud = new THREE.Points(geometry, pointMaterial);
+    scene.add(cloud);
+    tween = null;
+    hot = -1;
+    clearTrail();
+    hideTip();
+    empty.classList.add('hidden');
+
+    const many = series.length > 1;
+    timeRow.classList.toggle('is-shown', many);
+    scrub.max = String(series.length);
+    buildLabels();
+    showTimepoint(0, true);
+  }
+
+  // ---------- Timepoints ----------
+  const pad = (n: number) => String(n).padStart(String(series.length).length, '0');
+
+  function showTimepoint(index: number, immediate = false) {
+    if (!cloud) return;
+    current = index;
+    const attr = cloud.geometry.getAttribute('position') as THREE.BufferAttribute;
+    const target = scenePos[index];
+    if (immediate || reduceMotion) {
+      (attr.array as Float32Array).set(target);
+      attr.needsUpdate = true;
+      cloud.geometry.computeBoundingSphere();
+      tween = null;
+    } else {
+      // Start from wherever the points are on screen now, so fast scrubbing never jumps.
+      tween = { from: (attr.array as Float32Array).slice(), to: target, start: performance.now() };
+    }
+
+    const { name } = series[index];
+    scrub.value = String(index + 1);
+    scrub.setAttribute('aria-valuetext', `Timepoint ${index + 1} of ${series.length}, ${name}`);
+    readout.textContent = `${pad(index + 1)} / ${series.length} · ${name}`;
+    renderStats();
+    if (hot >= 0) describeHot();
+  }
+
+  function stepTween(now: number) {
+    if (!tween || !cloud) return;
+    const t = Math.min(1, (now - tween.start) / TWEEN_MS);
+    const e = 1 - Math.pow(1 - t, 3);
+    const attr = cloud.geometry.getAttribute('position') as THREE.BufferAttribute;
+    const out = attr.array as Float32Array;
+    const { from, to } = tween;
+    for (let k = 0; k < out.length; k++) out[k] = from[k] + (to[k] - from[k]) * e;
+    attr.needsUpdate = true;
+    if (t >= 1) {
+      tween = null;
+      // Keep raycasting (hover) accurate for the new positions.
+      cloud.geometry.computeBoundingSphere();
+    }
+  }
+
+  // ---------- Playback ----------
+  let playing = false;
+  let nextStepAt = 0;
+  function setPlaying(on: boolean) {
+    playing = on && series.length > 1;
+    playButton.setAttribute('aria-pressed', String(playing));
+    playLabel.textContent = playing ? 'Pause' : 'Play';
+    nextStepAt = performance.now() + 1000 / Number(speedInput.value);
+  }
+  function pause() {
+    if (playing) setPlaying(false);
+  }
+  function stepPlayback(now: number) {
+    if (!playing || now < nextStepAt) return;
+    nextStepAt = now + 1000 / Number(speedInput.value);
+    showTimepoint((current + 1) % series.length);
+  }
+  playButton.addEventListener('click', () => setPlaying(!playing));
+  scrub.addEventListener('input', () => {
+    pause();
+    showTimepoint(Number(scrub.value) - 1);
+  });
+  speedInput.addEventListener('change', () => (nextStepAt = performance.now() + 1000 / Number(speedInput.value)));
+
+  // ---------- Trail: one point's path across every timepoint ----------
+  let trail: THREE.Group | null = null;
+  function clearTrail() {
+    if (!trail) return;
+    trail.children.forEach((c) => (c as THREE.Line).geometry.dispose());
+    scene.remove(trail);
+    trail = null;
+    delete stage.dataset.trail;
+  }
+  function drawTrail(index: number) {
+    clearTrail();
+    if (index < 0 || series.length < 2) return;
+    const path = new Float32Array(series.length * 3);
+    scenePos.forEach((pos, t) => path.set(pos.subarray(index * 3, index * 3 + 3), t * 3));
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(path, 3));
+    trail = new THREE.Group();
+    trail.add(new THREE.Line(geometry, lineMat(0.55)));
+    trail.add(
+      new THREE.Points(
+        geometry.clone(),
+        new THREE.PointsMaterial({ color: green, size: 0.03, transparent: true, opacity: 0.7, depthWrite: false })
+      )
+    );
+    scene.add(trail);
+    stage.dataset.trail = String(index);
+  }
+
+  // ---------- Axis labels (HTML, projected each frame) ----------
+  type Label = { el: HTMLElement; at: THREE.Vector3; axis: number };
+  let labels: Label[] = [];
+  const fmt = (v: number) => {
+    const a = Math.abs(v);
+    if (a !== 0 && (a < 0.001 || a >= 10000)) return v.toExponential(1);
+    return Number(v.toFixed(a < 1 ? 3 : a < 100 ? 2 : 1)).toString();
+  };
+
+  function buildLabels() {
+    labelLayer.replaceChildren();
+    labels = [];
+    const add = (cls: string, text: string, at: THREE.Vector3, axis: number) => {
+      const el = document.createElement('span');
+      el.className = cls;
+      el.textContent = text;
+      labelLayer.append(el);
+      labels.push({ el, at, axis });
+    };
+    const TICKS = 5;
+    for (let i = 0; i < TICKS; i++) {
+      const t = -1 + (2 * i) / (TICKS - 1);
+      const f = i / (TICKS - 1);
+      const value = (axis: number) => ranges[axis].min + (ranges[axis].max - ranges[axis].min) * f;
+      add('gv-tick', fmt(value(0)), new THREE.Vector3(t, -1.08, 1.12), 0);
+      add('gv-tick', fmt(value(1)), new THREE.Vector3(1.14, -1.08, -t), 1);
+      add('gv-tick', fmt(value(2)), new THREE.Vector3(-1.12, t, 1.1), 2);
+    }
+    add('gv-axis', 'Gradient 1 (x)', new THREE.Vector3(0, -1.3, 1.4), 0);
+    add('gv-axis', 'Gradient 2 (y)', new THREE.Vector3(1.45, -1.3, 0), 1);
+    add('gv-axis', 'Gradient 3 (z)', new THREE.Vector3(-1.4, 1.25, 1.1), 2);
+  }
+
+  // Scene direction of each data axis (g1 → x, g2 → −z, g3 → up).
+  const AXIS_DIRS = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 1, 0)];
+  const projected = new THREE.Vector3();
+  const viewDir = new THREE.Vector3();
+  function placeLabels() {
+    const w = stage.clientWidth;
+    const h = stage.clientHeight;
+    // An axis pointing (nearly) at the viewer collapses its ticks onto one
+    // spot, so its labels are hidden in that view.
+    camera.getWorldDirection(viewDir);
+    const edgeOn = AXIS_DIRS.map((d) => Math.abs(d.dot(viewDir)) > 0.9);
+    labels.forEach(({ el, at, axis }) => {
+      projected.copy(at).project(camera);
+      const visible = projected.z < 1 && !edgeOn[axis];
+      el.style.display = visible ? '' : 'none';
+      if (!visible) return;
+      // Kept inside the frame so long axis titles never clip at the edge.
+      const x = THREE.MathUtils.clamp((projected.x * 0.5 + 0.5) * w - el.offsetWidth / 2, 6, w - el.offsetWidth - 6);
+      const y = THREE.MathUtils.clamp((-projected.y * 0.5 + 0.5) * h - el.offsetHeight / 2, 6, h - el.offsetHeight - 6);
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  }
+
+  // ---------- Stats (for the timepoint on screen) ----------
+  function renderStats() {
+    stats.replaceChildren();
+    const { name, points } = series[current];
+    if (series.length > 1) {
+      const caption = document.createElement('p');
+      caption.className = 'text-phosphor-dim sm:col-span-3';
+      caption.textContent = `At timepoint ${current + 1} of ${series.length} · ${name}`;
+      stats.append(caption);
+    }
+    ['Gradient 1', 'Gradient 2', 'Gradient 3'].forEach((label, a) => {
+      let min = Infinity;
+      let max = -Infinity;
+      let sum = 0;
+      points.forEach((p) => {
+        min = Math.min(min, p[a]);
+        max = Math.max(max, p[a]);
+        sum += p[a];
+      });
+      const block = document.createElement('div');
+      block.innerHTML = `<dt class="font-terminal text-[1.25rem] leading-none text-phosphor-400"></dt><dd class="mt-1.5 text-phosphor-dim"></dd>`;
+      block.querySelector('dt')!.textContent = label;
+      block.querySelector('dd')!.textContent = `min ${fmt(min)} · max ${fmt(max)} · mean ${fmt(sum / points.length)}`;
+      stats.append(block);
+    });
+  }
+
+  // ---------- Hover / tap a point ----------
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Points = { threshold: 0.035 };
+  const ndc = new THREE.Vector2();
+
+  function setHot(index: number) {
+    if (!cloud || index === hot) return;
+    const attr = cloud.geometry.getAttribute('aHot') as THREE.BufferAttribute;
+    if (hot >= 0) attr.setX(hot, 0);
+    if (index >= 0) attr.setX(index, 1);
+    attr.needsUpdate = true;
+    hot = index;
+    drawTrail(index);
+  }
+  function hideTip() {
+    tip.classList.add('hidden');
+  }
+  function describeHot() {
+    const [g1, g2, g3] = series[current].points[hot];
+    const when = series.length > 1 ? ` · ${series[current].name}` : '';
+    tip.textContent = `#${hot + 1}${when}   G1 ${fmt(g1)}   G2 ${fmt(g2)}   G3 ${fmt(g3)}`;
+  }
+  function inspect(clientX: number, clientY: number) {
+    if (!cloud) return;
+    const rect = canvas.getBoundingClientRect();
+    ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    raycaster.setFromCamera(ndc, camera);
+    const hit = raycaster.intersectObject(cloud)[0];
+    if (!hit || hit.index === undefined) {
+      setHot(-1);
+      hideTip();
+      return;
+    }
+    setHot(hit.index);
+    describeHot();
+    tip.classList.remove('hidden');
+    const x = Math.min(clientX - rect.left + 14, rect.width - tip.offsetWidth - 8);
+    const y = Math.max(clientY - rect.top - tip.offsetHeight - 12, 8);
+    tip.style.left = `${x}px`;
+    tip.style.top = `${y}px`;
+  }
+
+  let downAt: { x: number; y: number } | null = null;
+  canvas.addEventListener('pointerdown', (e) => {
+    downAt = { x: e.clientX, y: e.clientY };
+    hideTip();
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'mouse' && e.buttons === 0) inspect(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    // A tap (no drag) inspects the nearest point on touch screens too.
+    if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 6) inspect(e.clientX, e.clientY);
+    downAt = null;
+  });
+  canvas.addEventListener('pointerleave', () => {
+    setHot(-1);
+    hideTip();
+  });
+
+  // ---------- Views ----------
+  const VIEWS: Record<string, THREE.Vector3> = {
+    '3d': HOME,
+    xy: new THREE.Vector3(0, 5.6, 0.001), // looking down the z axis
+    xz: new THREE.Vector3(0, 0, 5.6), // looking along y
+    yz: new THREE.Vector3(5.6, 0, 0), // looking along x
+  };
+  let flight: { from: THREE.Vector3; to: THREE.Vector3; t: number } | null = null;
+  function flyTo(view: string) {
+    flight = { from: camera.position.clone(), to: VIEWS[view].clone(), t: 0 };
+    controls.target.set(0, 0, 0);
+    document.querySelectorAll<HTMLButtonElement>('.gv-view').forEach((b) => {
+      const on = b.dataset.view === view;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  }
+  document.querySelectorAll<HTMLButtonElement>('.gv-view').forEach((b) =>
+    b.addEventListener('click', () => flyTo(b.dataset.view!))
+  );
+  document.querySelector('.gv-reset')!.addEventListener('click', () => flyTo('3d'));
+  controls.addEventListener('start', () => {
+    flight = null;
+    document.querySelectorAll<HTMLButtonElement>('.gv-view').forEach((b) => {
+      b.classList.remove('is-on');
+      b.setAttribute('aria-pressed', 'false');
+    });
+  });
+
+  sizeInput.addEventListener('input', () => (pointMaterial.uniforms.uSize.value = Number(sizeInput.value)));
+  spinInput.addEventListener('change', () => (controls.autoRotate = spinInput.checked));
+
+  // ---------- Loop ----------
+  function resize() {
+    const w = stage.clientWidth;
+    const h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // Portrait screens widen the vertical field of view so the cube's full
+    // width still fits.
+    camera.fov = camera.aspect < 1.3 ? Math.min(55, (35 * 1.3) / camera.aspect) : 35;
+    camera.updateProjectionMatrix();
+    pointMaterial.uniforms.uScale.value = h / 120;
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  // Picking a view pauses playback so the camera move is easy to follow.
+  document.querySelectorAll<HTMLButtonElement>('.gv-view, .gv-reset').forEach((b) => b.addEventListener('click', pause));
+
+  function frame(now: number) {
+    if (flight) {
+      flight.t = Math.min(1, flight.t + 0.05);
+      const e = 1 - Math.pow(1 - flight.t, 3);
+      // Arc around the origin rather than cutting through the cube.
+      const r = THREE.MathUtils.lerp(flight.from.length(), flight.to.length(), e);
+      camera.position.lerpVectors(flight.from, flight.to, e).setLength(r);
+      if (flight.t >= 1) flight = null;
+    }
+    stepPlayback(now);
+    stepTween(now);
+    controls.update();
+    renderer.render(scene, camera);
+    placeLabels();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // ---------- Input wiring ----------
+  function setStatus(text: string, isError = false) {
+    status.textContent = text;
+    status.classList.toggle('is-error', isError);
+  }
+  const countNote = (n: number) => (n === EXPECTED ? '' : ` The viewer expects ${EXPECTED}; check nothing was cut off.`);
+
+  // The textarea is the single-matrix path: Plot always shows exactly what's pasted.
+  function run() {
+    const result = parse(input.value);
+    if ('error' in result) {
+      setStatus(result.error, true);
+      return;
+    }
+    input.placeholder = PLACEHOLDER;
+    loadSeries([{ name: 'pasted', points: result.points }]);
+    setStatus(result.note);
+    try {
+      localStorage.setItem(STORAGE_KEY, input.value);
+    } catch {
+      /* storage unavailable; nothing to remember */
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    run();
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      run();
+    }
+  });
+
+  const DATA_FILE = /\.(csv|tsv|txt)$/i;
+  const byName = (a: File, b: File) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+
+  // One file behaves like a paste; several become a time series in file-name order.
+  async function loadFiles(all: File[]) {
+    const files = all.filter((f) => DATA_FILE.test(f.name) && !f.name.startsWith('.')).sort(byName);
+    if (files.length === 0) {
+      setStatus('No .csv, .tsv or .txt files found there.', true);
+      return;
+    }
+    if (files.length === 1) {
+      input.value = await files[0].text();
+      run();
+      return;
+    }
+
+    const loaded: Timepoint[] = [];
+    for (const file of files) {
+      const result = parse(await file.text());
+      if ('error' in result) {
+        setStatus(`${file.name} — ${result.error}`, true);
+        return;
+      }
+      loaded.push({ name: file.name, points: result.points });
+    }
+    const size = loaded[0].points.length;
+    const odd = loaded.find((t) => t.points.length !== size);
+    if (odd) {
+      setStatus(
+        `${odd.name} has ${odd.points.length} points; ${loaded[0].name} has ${size}. Every timepoint needs the same points, in the same order.`,
+        true
+      );
+      return;
+    }
+
+    loadSeries(loaded);
+    input.value = '';
+    input.placeholder = `Showing ${loaded.length} files as a time series. Paste a matrix here and press Plot to replace them.`;
+    setStatus(
+      `${loaded.length} timepoints × ${size} points loaded (${loaded[0].name} … ${loaded[loaded.length - 1].name}).${countNote(size)}`
+    );
+  }
+
+  for (const picker of [fileInput, folderInput]) {
+    picker.addEventListener('change', () => {
+      if (picker.files?.length) loadFiles(Array.from(picker.files));
+      picker.value = '';
+    });
+  }
+
+  // Dropped folders arrive as directory entries; read them (and any subfolders) into files.
+  async function filesFromEntry(entry: FileSystemEntry): Promise<File[]> {
+    if (entry.isFile) {
+      return [await new Promise<File>((resolve, reject) => (entry as FileSystemFileEntry).file(resolve, reject))];
+    }
+    const reader = (entry as FileSystemDirectoryEntry).createReader();
+    const entries: FileSystemEntry[] = [];
+    // readEntries hands back results in batches until it returns an empty one.
+    for (;;) {
+      const batch = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject));
+      if (batch.length === 0) break;
+      entries.push(...batch);
+    }
+    return (await Promise.all(entries.map(filesFromEntry))).flat();
+  }
+  input.addEventListener('dragover', (e) => e.preventDefault());
+  input.addEventListener('drop', async (e) => {
+    const items = Array.from(e.dataTransfer?.items ?? []);
+    if (items.length === 0) return;
+    e.preventDefault();
+    const entries = items.map((item) => item.webkitGetAsEntry?.()).filter((x): x is FileSystemEntry => !!x);
+    const files = entries.length
+      ? (await Promise.all(entries.map(filesFromEntry))).flat()
+      : Array.from(e.dataTransfer?.files ?? []);
+    loadFiles(files);
+  });
+
+  document.querySelector('.gv-sample')!.addEventListener('click', () => {
+    // Synthetic data only: three blended clusters that drift and swirl over 30
+    // timepoints, so there is shape to rotate and motion to scrub through.
+    const rand = () => {
+      let u = 0;
+      for (let k = 0; k < 6; k++) u += Math.random();
+      return u / 6 - 0.5;
+    };
+    const centers = [
+      [2.2, -0.4, 0.3],
+      [-1.6, 1.4, -0.5],
+      [-0.8, -1.5, 1.1],
+    ];
+    const base = Array.from({ length: EXPECTED }, (_, i) => {
+      const c = centers[i % 3];
+      const n = centers[(i + 1) % 3];
+      const t = Math.random();
+      return { cluster: i % 3, at: [0, 1, 2].map((a) => c[a] + (n[a] - c[a]) * t * 0.6 + rand() * 1.1) };
+    });
+    const STEPS = 30;
+    const sample: Timepoint[] = Array.from({ length: STEPS }, (_, s) => {
+      const phase = (s / STEPS) * Math.PI * 2;
+      return {
+        name: `sample t${String(s + 1).padStart(2, '0')}`,
+        points: base.map(({ cluster, at }) => {
+          const k = phase + (cluster * Math.PI * 2) / 3;
+          return [at[0] + 0.7 * Math.cos(k), at[1] + 0.7 * Math.sin(k), at[2] + 0.45 * Math.sin(2 * k)].map(
+            (v) => Number(v.toFixed(4))
+          );
+        }),
+      };
+    });
+    loadSeries(sample);
+    input.value = '';
+    input.placeholder = `Showing a ${STEPS}-timepoint random sample. Paste a matrix here and press Plot to replace it.`;
+    setStatus(`${STEPS} timepoints × ${EXPECTED} random points. This is a synthetic sample, not real data.`);
+  });
+
+  document.querySelector('.gv-clear')!.addEventListener('click', () => {
+    input.value = '';
+    input.placeholder = PLACEHOLDER;
+    setStatus('');
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    input.focus();
+  });
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      input.value = saved;
+      run();
+    }
+  } catch {
+    /* storage unavailable */
+  }
+</script>

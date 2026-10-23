@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hologram Viewer</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/three.module.js",
+          "three/addons/": "./vendor/three/jsm/",
+          "lil-gui": "./vendor/lil-gui/lil-gui.esm.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="hologram-canvas"></canvas>
+    <div id="hint">drag to rotate</div>
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+output/
+viewer/data/*.png
+viewer/data/*.ply
+viewer/data/*.json
+viewer/vendor/
+scripts/node_modules/

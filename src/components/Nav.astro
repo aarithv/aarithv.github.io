@@ -1,0 +1,84 @@
+---
+import { getSite, getSections, getSectionFor } from '../data/content';
+
+const site = await getSite();
+const sections = await getSections();
+
+const current = (await getSectionFor(Astro.url.pathname))?.id;
+const exact = (href: string) => Astro.url.pathname.replace(/\/$/, '') === href;
+const isHome = Astro.url.pathname === '/';
+---
+
+<header class="site-nav sticky top-0 z-30 border-b border-phosphor-600/30">
+  <div class="mx-auto flex max-w-6xl items-center gap-x-8 px-5 sm:px-8">
+    <a
+      href="/"
+      aria-current={isHome ? 'page' : undefined}
+      class="font-terminal flex h-14 shrink-0 items-center gap-2 text-xl tracking-wide text-phosphor-400"
+    >
+      <svg viewBox="0 0 16 16" class="h-3.5 w-3.5" aria-hidden="true">
+        <circle cx="8" cy="8" r="3" fill="currentColor" />
+        <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" />
+      </svg>
+      {site.brand}
+    </a>
+    <nav aria-label="Primary" class="nav-scroll -mr-5 min-w-0 flex-1 overflow-x-auto sm:mr-0">
+      <ul class="flex h-14 items-center gap-x-6 whitespace-nowrap pr-5 text-xs uppercase tracking-[0.08em] sm:justify-end sm:pr-0">
+        {sections.map((r) => {
+          const active = r.id === current;
+          return (
+            <li>
+              <a
+                href={r.href}
+                aria-current={active ? (exact(r.href) ? 'page' : 'true') : undefined}
+                class:list={[
+                  'nav-link flex items-center gap-2 py-3 transition-colors hover:text-phosphor-400',
+                  active ? 'text-phosphor-400' : 'text-phosphor-dim',
+                ]}
+              >
+                <svg viewBox="0 0 10 10" class="h-2 w-2 shrink-0" aria-hidden="true">
+                  <circle cx="5" cy="5" r="3.5" fill={active ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.2" />
+                </svg>
+                {r.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // On phones the region list scrolls sideways; bring the current page into
+  // view so the nav always shows where you are on the map.
+  const scroller = document.querySelector<HTMLElement>('.nav-scroll');
+  const current = scroller?.querySelector<HTMLElement>('[aria-current]');
+  if (scroller && current && scroller.scrollWidth > scroller.clientWidth) {
+    const offset = current.getBoundingClientRect().left - scroller.getBoundingClientRect().left;
+    scroller.scrollLeft = offset - scroller.clientWidth / 2 + current.offsetWidth / 2;
+  }
+</script>
+
+<style>
+  .site-nav {
+    background: color-mix(in srgb, var(--color-crt-void) 88%, transparent);
+  }
+  .nav-scroll {
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+  }
+  .nav-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .nav-scroll {
+      mask-image: none;
+    }
+  }
+  .nav-link[aria-current] {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+  }
+</style>

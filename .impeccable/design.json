@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-22T14:34:04.976220+00:00",
+  "title": "Design System: Aarith Veerabhadran",
+  "extensions": {
+    "colorMeta": {
+      "phosphor-300": {
+        "role": "primary",
+        "displayName": "Hot Phosphor",
+        "canonical": "#7dffa3",
+        "tonalRamp": [
+          "oklch(15% 0.2 145.5)",
+          "oklch(25% 0.2 145.5)",
+          "oklch(38% 0.2 145.5)",
+          "oklch(50% 0.2 145.5)",
+          "oklch(62% 0.2 145.5)",
+          "oklch(74% 0.2 145.5)",
+          "oklch(85% 0.2 145.5)",
+          "oklch(95% 0.2 145.5)"
+        ]
+      },
+      "phosphor-400": {
+        "role": "primary",
+        "displayName": "Lit Phosphor",
+        "canonical": "#33ff66",
+        "tonalRamp": [
+          "oklch(15% 0.25 145.5)",
+          "oklch(25% 0.25 145.5)",
+          "oklch(38% 0.25 145.5)",
+          "oklch(50% 0.25 145.5)",
+          "oklch(62% 0.25 145.5)",
+          "oklch(74% 0.25 145.5)",
+          "oklch(85% 0.25 145.5)",
+          "oklch(95% 0.25 145.5)"
+        ]
+      },
+      "phosphor-500": {
+        "role": "primary",
+        "displayName": "Signal Phosphor",
+        "canonical": "#00ff41",
+        "tonalRamp": [
+          "oklch(15% 0.27 145.5)",
+          "oklch(25% 0.27 145.5)",
+          "oklch(38% 0.27 145.5)",
+          "oklch(50% 0.27 145.5)",
+          "oklch(62% 0.27 145.5)",
+          "oklch(74% 0.27 145.5)",
+          "oklch(85% 0.27 145.5)",
+          "oklch(95% 0.27 145.5)"
+        ]
+      },
+      "phosphor-600": {
+        "role": "primary",
+        "displayName": "Low Phosphor",
+        "canonical": "#00cc34",
+        "tonalRamp": [
+          "oklch(15% 0.22 145.5)",
+          "oklch(25% 0.22 145.5)",
+          "oklch(38% 0.22 145.5)",
+          "oklch(50% 0.22 145.5)",
+          "oklch(62% 0.22 145.5)",
+          "oklch(74% 0.22 145.5)",
+          "oklch(85% 0.22 145.5)",
+          "oklch(95% 0.22 145.5)"
+        ]
+      },
+      "phosphor-dim": {
+        "role": "neutral",
+        "displayName": "Dim Phosphor",
+        "canonical": "#4ade80",
+        "tonalRamp": [
+          "oklch(15% 0.17 150)",
+          "oklch(25% 0.17 150)",
+          "oklch(38% 0.17 150)",
+          "oklch(50% 0.17 150)",
+          "oklch(62% 0.17 150)",
+          "oklch(74% 0.17 150)",
+          "oklch(85% 0.17 150)",
+          "oklch(95% 0.17 150)"
+        ]
+      },
+      "crt-black": {
+        "role": "neutral",
+        "displayName": "CRT Black",
+        "canonical": "#0a0a0a",
+        "tonalRamp": [
+          "oklch(15% 0.0 145.5)",
+          "oklch(25% 0.0 145.5)",
+          "oklch(38% 0.0 145.5)",
+          "oklch(50% 0.0 145.5)",
+          "oklch(62% 0.0 145.5)",
+          "oklch(74% 0.0 145.5)",
+          "oklch(85% 0.0 145.5)",
+          "oklch(95% 0.0 145.5)"
+        ]
+      },
+      "crt-void": {
+        "role": "neutral",
+        "displayName": "CRT Void",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "oklch(15% 0.0 145.5)",
+          "oklch(25% 0.0 145.5)",
+          "oklch(38% 0.0 145.5)",
+          "oklch(50% 0.0 145.5)",
+          "oklch(62% 0.0 145.5)",
+          "oklch(74% 0.0 145.5)",
+          "oklch(85% 0.0 145.5)",
+          "oklch(95% 0.0 145.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles and the home name, with the phosphor glow."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Entry titles inside a plate: research labs, index region names."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Year numerals on Awards."
+      },
+      "headline-sm": {
+        "displayName": "Headline small",
+        "purpose": "Award names; home atlas labels from 640px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Plate headings and home atlas labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Long-form running text, capped at 62-64ch."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Descriptions, readout values, page-header ledes."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav, buttons, metadata, captions, plate numbers; tabular numerals."
+      }
+    },
+    "shadows": [
+      {
+        "name": "phosphor-glow",
+        "value": "text-shadow: 0 0 18px color-mix(in srgb, #00ff41 35%, transparent)",
+        "purpose": "Display titles only; emission, not elevation."
+      },
+      {
+        "name": "node-flash",
+        "value": "box-shadow: 0 0 0 0 color-mix(in srgb, #33ff66 70%, transparent) -> 0 0 0 12px transparent, 700ms",
+        "purpose": "One-shot ring when a home atlas node is activated."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-signal",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Movement: arrow nudge, pings, photo resolve, lightbox entry, page crossfade."
+      },
+      {
+        "name": "state-colour",
+        "value": "160ms ease-out",
+        "purpose": "Colour, border and fill state changes."
+      },
+      {
+        "name": "pathway",
+        "value": "200ms ease-out",
+        "purpose": "Atlas pathway opacity and stroke when lit."
+      },
+      {
+        "name": "page-crossfade",
+        "value": "220ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Cross-document view transition; nav and mini-map hold their place."
+      },
+      {
+        "name": "photo-resolve",
+        "value": "700ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Duotone to full colour on attention (400-450ms on thumbnails and About figures)."
+      },
+      {
+        "name": "ping",
+        "value": "2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite",
+        "purpose": "Ring on the current node (mini-map, research axon). Gated by prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "480px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "index",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Default terminal key: footer contacts, secondary PDF action.",
+      "html": "<a class=\"ds-btn\" href=\"#\">GitHub <svg viewBox=\"0 0 12 12\" width=\"12\" height=\"12\" aria-hidden=\"true\"><path d=\"M3 9L9 3M4.5 3H9v4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"square\"/></svg></a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:.6rem;min-height:44px;padding:0 1.1rem;background:transparent;border:1px solid color-mix(in srgb,var(--color-phosphor-500, #00ff41) 60%,transparent);border-radius:0;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-phosphor-400, #33ff66);cursor:pointer;transition:background-color 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out}.ds-btn:hover{border-color:var(--color-phosphor-400, #33ff66);background-color:color-mix(in srgb,var(--color-phosphor-500, #00ff41) 12%,transparent)}.ds-btn:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:2px}"
+    },
+    {
+      "name": "Solid Button",
+      "kind": "button",
+      "refersTo": "button-solid",
+      "description": "The single primary action on a page (PDF download).",
+      "html": "<a class=\"ds-btn ds-btn-solid\" href=\"#\">Download PDF</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:.6rem;min-height:44px;padding:0 1.1rem;background:transparent;border:1px solid color-mix(in srgb,var(--color-phosphor-500, #00ff41) 60%,transparent);border-radius:0;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-phosphor-400, #33ff66);cursor:pointer;transition:background-color 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out}.ds-btn:hover{border-color:var(--color-phosphor-400, #33ff66);background-color:color-mix(in srgb,var(--color-phosphor-500, #00ff41) 12%,transparent)}.ds-btn:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:2px}.ds-btn-solid{background:var(--color-phosphor-500, #00ff41);border-color:var(--color-phosphor-500, #00ff41);color:var(--color-crt-void, #000)}.ds-btn-solid:hover{background:var(--color-phosphor-400, #33ff66);color:var(--color-crt-void, #000)}"
+    },
+    {
+      "name": "Inline Link",
+      "kind": "custom",
+      "refersTo": "link",
+      "description": "Links inside running text.",
+      "html": "<p class=\"ds-p\">Read the <a class=\"ds-link\" href=\"#\">publication</a> in full.</p>",
+      "css": ".ds-p{font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.94rem;color:var(--color-phosphor-500, #00ff41);margin:0}.ds-link{color:var(--color-phosphor-400, #33ff66);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--color-phosphor-400, #33ff66) 40%,transparent);text-underline-offset:4px;text-decoration-thickness:1px;transition:text-decoration-color 160ms ease-out}.ds-link:hover{text-decoration-color:var(--color-phosphor-400, #33ff66)}.ds-link:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:2px}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky region nav; six regions in map order, the current one filled and underlined.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">AARITH_</a><ul><li><a class=\"ds-nl\" href=\"#\"><i></i>About</a></li><li><a class=\"ds-nl\" aria-current=\"page\" href=\"#\"><i></i>Research</a></li><li><a class=\"ds-nl\" href=\"#\"><i></i>Projects</a></li></ul></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:2rem;height:56px;padding:0 1.25rem;background:color-mix(in srgb,#000 88%,transparent);border-bottom:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 30%,transparent)}.ds-brand{font-family:VT323, 'JetBrains Mono', monospace;font-size:1.25rem;letter-spacing:.025em;color:var(--color-phosphor-400, #33ff66);text-decoration:none}.ds-nav ul{display:flex;gap:1.5rem;list-style:none;margin:0 0 0 auto;padding:0}.ds-nl{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-phosphor-dim, #4ade80);text-decoration:none;transition:color 160ms ease-out}.ds-nl i{width:7px;height:7px;border:1.2px solid currentColor;border-radius:50%}.ds-nl:hover{color:var(--color-phosphor-400, #33ff66)}.ds-nl[aria-current=page]{color:var(--color-phosphor-400, #33ff66);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px}.ds-nl[aria-current=page] i{background:currentColor}.ds-nl:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:2px}"
+    },
+    {
+      "name": "Atlas Plate",
+      "kind": "card",
+      "refersTo": "atlas-plate",
+      "description": "The only container: hairline frame with corner registration ticks and a box-drawing head.",
+      "html": "<section class=\"ds-plate\"><div class=\"ds-head\"><span class=\"ds-g\">\u250c\u2500</span><h2>REGION INDEX</h2><span class=\"ds-run\"></span><span class=\"ds-meta\">6 regions mapped</span></div><div class=\"ds-body\">Content sits on ruled lists, never nested boxes.</div></section>",
+      "css": ".ds-plate{--t:14px;--c:var(--color-phosphor-500, #00ff41);border:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 35%,transparent);background:linear-gradient(var(--c),var(--c)) top left/var(--t) 1px,linear-gradient(var(--c),var(--c)) top left/1px var(--t),linear-gradient(var(--c),var(--c)) top right/var(--t) 1px,linear-gradient(var(--c),var(--c)) top right/1px var(--t),linear-gradient(var(--c),var(--c)) bottom left/var(--t) 1px,linear-gradient(var(--c),var(--c)) bottom left/1px var(--t),linear-gradient(var(--c),var(--c)) bottom right/var(--t) 1px,linear-gradient(var(--c),var(--c)) bottom right/1px var(--t),color-mix(in srgb,#000 78%,transparent);background-repeat:no-repeat;font-family:'JetBrains Mono', ui-monospace, monospace;color:var(--color-phosphor-500, #00ff41)}.ds-head{display:flex;align-items:baseline;gap:.5rem;padding:.75rem 1.5rem 0}.ds-g{color:var(--color-phosphor-600, #00cc34)}.ds-head h2{margin:0;font-family:VT323, 'JetBrains Mono', monospace;font-weight:400;font-size:1.25rem;line-height:1;letter-spacing:.025em;color:var(--color-phosphor-400, #33ff66)}.ds-run{flex:1;border-top:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 70%,transparent);align-self:center}.ds-meta{font-size:.75rem;color:var(--color-phosphor-dim, #4ade80);font-variant-numeric:tabular-nums}.ds-body{padding:1rem 1.5rem 1.5rem;font-size:.875rem;line-height:1.625}"
+    },
+    {
+      "name": "Tick Ruler with Plate Label",
+      "kind": "custom",
+      "description": "Page-header ruler: unlabeled scale marks (minor 8px, major 64px) ending in the plate number.",
+      "html": "<div class=\"ds-rr\"><div class=\"ds-rule\"></div><span>PL. 02 \u00b7 Thalamus</span></div>",
+      "css": ".ds-rr{display:flex;align-items:flex-start;gap:1rem}.ds-rule{flex:1;height:9px;border-top:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 55%,transparent);background:repeating-linear-gradient(to right,var(--color-phosphor-600, #00cc34) 0 1px,transparent 1px 64px) top left/100% 9px no-repeat,repeating-linear-gradient(to right,color-mix(in srgb,var(--color-phosphor-600, #00cc34) 50%,transparent) 0 1px,transparent 1px 8px) top left/100% 4px no-repeat}.ds-rr span{margin-top:-.5rem;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-variant-numeric:tabular-nums;color:var(--color-phosphor-dim, #4ade80)}"
+    },
+    {
+      "name": "Region Index Row",
+      "kind": "custom",
+      "description": "A region in the home index: node, VT323 name, structure and role, summary, plate number and arrow.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-n\"><svg viewBox=\"0 0 12 12\" width=\"10\" height=\"10\"><circle cx=\"6\" cy=\"6\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\"/></svg><b>Research</b></span><span class=\"ds-s\"><em>Thalamus</em><br>relay for consciousness</span><span class=\"ds-pl\">PL. 02 <svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\"><path d=\"M4 12h14M12 6l6 6-6 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"square\"/></svg></span></a>",
+      "css": ".ds-row{display:grid;grid-template-columns:12rem 11rem auto;gap:.5rem 2rem;align-items:start;padding:1.4rem 1.5rem;border-top:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 28%,transparent);text-decoration:none;font-family:'JetBrains Mono', ui-monospace, monospace;transition:background-color 180ms ease-out}.ds-n{display:flex;align-items:center;gap:.75rem;color:var(--color-phosphor-500, #00ff41)}.ds-n b{font-family:VT323, 'JetBrains Mono', monospace;font-weight:400;font-size:1.7rem;line-height:1;color:var(--color-phosphor-400, #33ff66)}.ds-n circle{transition:fill 160ms ease-out}.ds-s{font-size:.75rem;line-height:1.4;color:var(--color-phosphor-dim, #4ade80)}.ds-s em{font-style:normal;color:var(--color-phosphor-500, #00ff41)}.ds-pl{display:flex;align-items:center;gap:1rem;justify-self:end;font-size:.75rem;letter-spacing:.1em;color:var(--color-phosphor-dim, #4ade80)}.ds-pl svg{color:var(--color-phosphor-400, #33ff66);transition:transform 200ms cubic-bezier(0.16, 1, 0.3, 1)}.ds-row:hover,.ds-row:focus-visible{background-color:color-mix(in srgb,var(--color-phosphor-500, #00ff41) 7%,transparent)}.ds-row:hover circle{fill:currentColor}.ds-row:hover .ds-pl svg{transform:translateX(4px)}.ds-row:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:-2px}"
+    },
+    {
+      "name": "Attended Photo Frame",
+      "kind": "custom",
+      "description": "Photographs in phosphor duotone that resolve into full colour when attended.",
+      "html": "<figure class=\"ds-ph\"><button class=\"ds-pf\" type=\"button\"><img alt=\"\" src=\"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 3%22%3E%3Crect width=%224%22 height=%223%22 fill=%22%23c86%22/%3E%3Ccircle cx=%223%22 cy=%221%22 r=%22.6%22 fill=%22%2369c%22/%3E%3C/svg%3E\"></button><figcaption><span>01 / 13</span><span>Sony ZV-1</span></figcaption></figure>",
+      "css": ".ds-ph{margin:0;width:240px}.ds-pf{display:block;width:100%;padding:0;overflow:hidden;background:none;border:1px solid color-mix(in srgb,var(--color-phosphor-600, #00cc34) 40%,transparent);cursor:pointer}.ds-pf img{display:block;width:100%;filter:grayscale(1) sepia(1) hue-rotate(62deg) saturate(2.6) brightness(.8);transition:filter 700ms cubic-bezier(0.16, 1, 0.3, 1),transform 900ms cubic-bezier(0.16, 1, 0.3, 1)}.ds-pf:hover img,.ds-pf:focus-visible img{filter:none}.ds-pf:hover img{transform:scale(1.025)}.ds-pf:focus-visible{outline:2px solid var(--color-phosphor-400, #33ff66);outline-offset:3px}.ds-ph figcaption{display:flex;justify-content:space-between;margin-top:.5rem;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.7rem;font-variant-numeric:tabular-nums;color:var(--color-phosphor-dim, #4ade80)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Atlas of One Brain",
+    "overview": "The site is drawn as an anatomical atlas plate on a dark phosphor screen. A face hologram sits at the centre of a living neuron network, six region nodes ring it on leader lines, and every section of the site is one of those regions: About is the medial prefrontal cortex, Photography the visual cortex. The map is the navigation; each interior page keeps its place on it through a mini-map in the header and a plate number on the ruler beneath the title.\n\nEverything is one colour of light on black. Hierarchy comes from luminance steps inside the phosphor band, from the change of face between VT323 (headings, labels, region names) and JetBrains Mono (everything read), and from hairlines: frames, rules, tick rulers and axon fibres at 1px. There are no cards, no fills, no rounded containers; content sits on ruled plates and lists that read like an instrument readout. Density is moderate and text-led; the only motion is signal: pathways lighting, pulses travelling, rings pinging on the current node.\n\nThe one sanctioned departure from monochrome is photography, which resolves from a phosphor duotone into full colour when attended, because a photography portfolio has to show frames as shot.",
+    "keyCharacteristics": [
+      "Phosphor-only palette on pure black; luminance is the only hierarchy axis in colour.",
+      "VT323 for anything named, JetBrains Mono for anything read.",
+      "Hairline geometry: 1px frames, corner registration ticks, tick rulers, leader lines.",
+      "Square corners everywhere except nodes, which are always circles.",
+      "A fixed six-region map (order and positions from `src/data/regions.ts`) recurs on home, in every page header, and as plate numbers PL. 01 to PL. 06.",
+      "Photographs sit in phosphor duotone and resolve into colour when attended."
+    ],
+    "rules": [
+      {
+        "name": "The One Light Rule",
+        "body": "Every pixel the system draws is phosphor green or black. Hierarchy is expressed by stepping along the ramp (600 structure, dim secondary, 500 base, 400 named or attended, 300 peak signal), never by introducing a hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Attended Colour Rule",
+        "body": "The single exception is photographs (the photo grid, the About figures, the home index thumbnails). They render through a phosphor duotone (`grayscale(1) sepia(1) hue-rotate(62deg) saturate(2.6) brightness(0.8)`) and resolve to full colour when attended: on hover, on focus, or when scrolled into the middle band of the viewport (an IntersectionObserver with `-38%` top and bottom root margins). The lightbox always shows full colour. No other element may leave the ramp.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hairline Alpha Rule",
+        "body": "Borders and rules are phosphor-600 mixed toward transparent, not new grey tokens: 28-30% for list separators and nav/footer rules, 35% for plate frames, 40% for photo frames, 55-60% for rulers and button outlines.",
+        "section": "colors"
+      },
+      {
+        "name": "The Named Things Rule",
+        "body": "If it is a name (a page, a region, a lab, an award, a plate), it is set in VT323 in Lit Phosphor. If it is read, it is JetBrains Mono. Never set running text in VT323.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Readout Rule",
+        "body": "Dates, counts, frame numbers and plate numbers use tabular numerals and Dim Phosphor, so columns of data align like an instrument display.",
+        "section": "typography"
+      },
+      {
+        "name": "The Verbatim Bio Rule",
+        "body": "The bio paragraph on Home and About is the owner's own text and is reproduced exactly; layout may change around it, the words may not.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed Map Rule",
+        "body": "The six regions keep their positions and order everywhere: the home atlas, every mini-map, the nav, and plate numbers PL. 01 to PL. 06 all derive from `regions.ts`. A new section is a new region in that file, never a free-floating page.",
+        "section": "layout"
+      },
+      {
+        "name": "The Scale Mark Rule",
+        "body": "Tick rulers carry minor ticks every 8px and majors every 64px, as unlabeled scale marks. Whether they should carry coordinate labels is an open decision for the owner; until it is made, do not add numbers to them.",
+        "section": "layout"
+      },
+      {
+        "name": "The Emission Not Elevation Rule",
+        "body": "Things never lift off the screen; they glow brighter. State is shown by stepping up the phosphor ramp or by a faint 7-12% phosphor wash, never by a shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** express every level of hierarchy as a step on the phosphor ramp: phosphor-600 for structure, phosphor-dim for secondary, phosphor-500 for base, phosphor-400 for named or attended, phosphor-300 for peak signal only.",
+      "**Do** set names in VT323 and anything read in JetBrains Mono, with running text capped at 62-64ch.",
+      "**Do** put new content on an atlas plate or a hairline-ruled list, with corner ticks on the plate and 28-35% phosphor-600 rules between rows.",
+      "**Do** add a new section as a region in `regions.ts`, so it inherits its nav item, mini-map node and plate number.",
+      "**Do** run every photograph through the phosphor duotone and resolve it to full colour on hover, focus, or mid-viewport scroll; show full colour in the lightbox.",
+      "**Do** keep interactive targets at 44px or more and gate every authored animation behind `prefers-reduced-motion: no-preference`.",
+      "**Do** show state by glowing brighter (ramp step or a 7-12% phosphor wash), with 160-200ms ease-out for colour and `cubic-bezier(0.16, 1, 0.3, 1)` for movement."
+    ],
+    "donts": [
+      "**Don't** introduce any hue outside the phosphor ramp other than attended photographs.",
+      "**Don't** use cards, filled panels, rounded containers or drop shadows; the plate frame and hairline are the only containers.",
+      "**Don't** round corners on anything except nodes, which are always full circles.",
+      "**Don't** add coordinate labels to tick rulers until the owner decides on them.",
+      "**Don't** rewrite, trim or paraphrase the bio copy.",
+      "**Don't** invent projects, credentials or placeholder entries to fill a plate; an empty region shows its unmapped state."
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+---
+interface Photo {
+  src: string;
+  alt: string;
+  camera: string;
+}
+
+interface Props {
+  photos: Photo[];
+}
+
+const { photos } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<div class="columns-1 gap-5 min-[480px]:columns-2 lg:columns-3">
+  {
+    photos.map((photo, index) => (
+      <figure class="photo mb-5 break-inside-avoid">
+        <button
+          type="button"
+          class="photo-frame group relative block w-full overflow-hidden border border-phosphor-600/40"
+          data-lightbox-index={index}
+          data-full-src={photo.src}
+          data-alt={photo.alt}
+          aria-label={`Open frame ${index + 1} of ${photos.length}, ${photo.camera}`}
+        >
+          <img src={photo.src} alt={photo.alt} loading="lazy" class="w-full" />
+        </button>
+        <figcaption class="mt-2 flex justify-between text-xs tabular-nums text-phosphor-dim">
+          <span>{pad(index + 1)} / {pad(photos.length)}</span>
+          <span>{photo.camera}</span>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  /* Visual cortex: frames sit in phosphor monochrome and resolve into full
+     colour when they're attended to — hovered, focused, or (on any device)
+     scrolled into the middle band of the screen. */
+  .photo-frame img {
+    filter: grayscale(1) sepia(1) hue-rotate(62deg) saturate(2.6) brightness(0.8);
+    transition:
+      filter 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .photo.is-attended .photo-frame img,
+  .photo-frame:hover img,
+  .photo-frame:focus-visible img {
+    filter: none;
+  }
+  .photo-frame:hover img {
+    transform: scale(1.025);
+  }
+  .photo-frame:focus-visible {
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-frame img {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const figures = document.querySelectorAll('.photo');
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => entry.target.classList.toggle('is-attended', entry.isIntersecting));
+      },
+      { rootMargin: '-38% 0px -38% 0px' }
+    );
+    figures.forEach((figure) => observer.observe(figure));
+  } else {
+    figures.forEach((figure) => figure.classList.add('is-attended'));
+  }
+</script>

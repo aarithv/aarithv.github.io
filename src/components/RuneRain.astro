@@ -1,0 +1,92 @@
+---
+import '@fontsource/noto-sans-runic';
+
+interface Props {
+  /** Peak glyph opacity, 0..1. */
+  intensity?: number;
+  class?: string;
+}
+
+const { intensity = 0.16, class: className } = Astro.props;
+---
+
+<canvas
+  class:list={['rune-rain pointer-events-none absolute inset-0 z-0', className]}
+  data-intensity={intensity}
+  aria-hidden="true"
+></canvas>
+
+<script>
+  // Falling columns of Elder Futhark runes, sized to the canvas's parent.
+  // Each instance on the page runs independently.
+  const RUNES = Array.from({ length: 0x16f9 - 0x16a0 }, (_, i) => String.fromCodePoint(0x16a0 + i));
+  const randomRune = () => RUNES[Math.floor(Math.random() * RUNES.length)];
+  const fontSize = 18;
+  const stepIntervalMs = 140;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLCanvasElement>('canvas.rune-rain').forEach((canvas) => {
+    const host = canvas.parentElement;
+    const ctx = canvas.getContext('2d');
+    if (!host || !ctx) return;
+    const intensity = Number(canvas.dataset.intensity) || 0.16;
+
+    let columns: number[] = [];
+    let width = 0;
+    let height = 0;
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      width = host!.clientWidth;
+      height = host!.clientHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const columnCount = Math.max(1, Math.floor(width / fontSize));
+      columns = Array.from({ length: columnCount }, () => Math.random() * (height / fontSize));
+      ctx!.font = `${fontSize}px "Noto Sans Runic"`;
+    }
+
+    function drawStatic() {
+      ctx!.clearRect(0, 0, width, height);
+      ctx!.fillStyle = `rgba(0, 255, 65, ${intensity * 0.875})`;
+      columns.forEach((y, i) => {
+        ctx!.fillText(randomRune(), i * fontSize, (y % (height / fontSize)) * fontSize);
+      });
+    }
+
+    let lastStep = 0;
+    let onScreen = true;
+    function tick(timestamp: number) {
+      if (onScreen && timestamp - lastStep >= stepIntervalMs) {
+        lastStep = timestamp;
+        // Fade toward transparent (not black) so the canvas can sit over other layers.
+        ctx!.save();
+        ctx!.globalCompositeOperation = 'destination-out';
+        ctx!.fillStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx!.fillRect(0, 0, width, height);
+        ctx!.restore();
+
+        ctx!.fillStyle = `rgba(0, 255, 65, ${intensity})`;
+        columns.forEach((y, i) => {
+          ctx!.fillText(randomRune(), i * fontSize, y * fontSize);
+          columns[i] = y * fontSize > height && Math.random() > 0.975 ? 0 : y + 1;
+        });
+      }
+      requestAnimationFrame(tick);
+    }
+
+    resize();
+    new ResizeObserver(resize).observe(host);
+    new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(canvas);
+
+    // unicode-range splits this family across per-script @font-face files, so the
+    // load text must actually contain runes or the Latin-subset file loads instead.
+    document.fonts.load(`${fontSize}px "Noto Sans Runic"`, RUNES.join('')).finally(() => {
+      if (reduceMotion) drawStatic();
+      else requestAnimationFrame(tick);
+    });
+  });
+</script>

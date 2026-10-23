@@ -1,0 +1,198 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { getPage } from '../data/content';
+
+const page = await getPage('research');
+
+const entries = (await getCollection('research')).sort(
+  (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
+);
+
+function formatRange(start: Date, end?: Date) {
+  const fmt = (d: Date) =>
+    d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  return `${fmt(start)} – ${end ? fmt(end) : 'Present'}`;
+}
+---
+
+<BaseLayout title={page.title} description={page.description}>
+  <PageHeader title={page.title ?? 'Research'}>{page.hasBody && <page.Content />}</PageHeader>
+
+  <ol class="axon mx-auto max-w-6xl px-5 pb-28 sm:px-8">
+    {entries.map((entry, i) => {
+      const current = !entry.data.endDate;
+      return (
+        <li class:list={['axon-entry', { 'is-current': current }]}>
+          <p class="axon-date text-xs tabular-nums text-phosphor-dim">
+            {formatRange(entry.data.startDate, entry.data.endDate)}
+          </p>
+          <span class="axon-node" aria-hidden="true" style={`--i: ${i}`}>
+            <span class="axon-spike"></span>
+          </span>
+          <div class="min-w-0 pb-14">
+            <h2 class="font-terminal text-[1.9rem] leading-[1.02] text-phosphor-400">{entry.data.lab}</h2>
+            <p class="mt-2 text-xs text-phosphor-dim">
+              {entry.data.pi}
+              {current && (
+                <span class="ml-3 inline-flex items-center gap-1.5 text-phosphor-400">
+                  <span class="inline-block h-1.5 w-1.5 rounded-full bg-phosphor-400" aria-hidden="true"></span>
+                  active
+                </span>
+              )}
+            </p>
+            <p class="mt-4 max-w-[62ch] text-[0.94rem] leading-[1.75]">{entry.data.description}</p>
+            {entry.data.links && entry.data.links.length > 0 && (
+              <ul class="mt-5 flex flex-col gap-2 text-sm">
+                {entry.data.links.map((link) => (
+                  <li>
+                    <a
+                      href={link.url}
+                      class="link"
+                      {...(link.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+                    >
+                      {link.label}
+                      <svg viewBox="0 0 12 12" class="ml-1.5 inline-block h-2.5 w-2.5 align-baseline" aria-hidden="true">
+                        <path d="M3 9L9 3M4.5 3H9v4.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="square" />
+                      </svg>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+</BaseLayout>
+
+<style>
+  /* The log reads as one axon: a vertical fibre with a node per entry. */
+  .axon-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    column-gap: 1rem;
+  }
+  .axon-date {
+    grid-column: 2;
+    margin-bottom: 0.6rem;
+  }
+  .axon-node {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    position: relative;
+    justify-self: center;
+    width: 1px;
+    background: color-mix(in srgb, var(--color-phosphor-600) 45%, transparent);
+  }
+  .axon-entry:last-child .axon-node {
+    background: linear-gradient(color-mix(in srgb, var(--color-phosphor-600) 45%, transparent), transparent);
+  }
+  .axon-node::before {
+    content: '';
+    position: absolute;
+    top: 0.15rem;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border: 1.3px solid var(--color-phosphor-500);
+    border-radius: 50%;
+    background: var(--color-crt-void);
+    transform: translateX(-50%);
+  }
+  .is-current .axon-node::before {
+    background: var(--color-phosphor-400);
+  }
+  .axon-entry > div {
+    grid-column: 2;
+  }
+  @media (min-width: 768px) {
+    .axon-entry {
+      grid-template-columns: 10rem 1.25rem minmax(0, 1fr);
+      column-gap: 1.75rem;
+    }
+    .axon-date {
+      grid-column: 1;
+      margin: 0;
+      padding-top: 0.2rem;
+      text-align: right;
+    }
+    .axon-node {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .axon-entry > div {
+      grid-column: 3;
+    }
+  }
+  /* Action potentials: a bright spike runs down each segment of the axon,
+     each segment a beat after the one above, so the signal reads as
+     propagating from the newest entry to the oldest. */
+  .axon-spike {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .axon-spike {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 3px;
+      height: 2.5rem;
+      background: linear-gradient(to bottom, transparent, var(--color-phosphor-400) 85%, var(--color-phosphor-300));
+      opacity: 0;
+      transform: translateX(-50%);
+      animation: spike-run 2.8s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+      animation-delay: calc(var(--i) * 0.7s);
+    }
+    .axon-entry:last-child .axon-spike {
+      display: none;
+    }
+  }
+  @keyframes spike-run {
+    0% {
+      top: 0.3rem;
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    55% {
+      top: calc(100% - 2.5rem);
+      opacity: 1;
+    }
+    62%,
+    100% {
+      top: calc(100% - 2.5rem);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .is-current .axon-node::after {
+      content: '';
+      position: absolute;
+      top: 0.15rem;
+      left: 50%;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid var(--color-phosphor-400);
+      transform: translateX(-50%);
+      animation: axon-ping 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+  }
+  @keyframes axon-ping {
+    0% {
+      transform: translateX(-50%) scale(1);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateX(-50%) scale(2.6);
+      opacity: 0;
+    }
+  }
+</style>

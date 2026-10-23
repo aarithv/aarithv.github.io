@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  meta?: string;
+  as?: 'section' | 'div';
+}
+
+const { title, meta, as: Tag = 'section' } = Astro.props;
+// Long enough to outrun any container; the row clips it, so the rule always
+// runs to the frame's edge at whatever width the panel lands.
+const run = '─'.repeat(240);
+---
+
+<Tag class="ascii-panel atlas-frame relative min-w-0">
+  <div class="ascii-head flex items-baseline gap-2 overflow-hidden whitespace-nowrap px-4 pt-3 sm:px-6">
+    <span class="text-phosphor-600" aria-hidden="true">┌─</span>
+    <h2 class="font-terminal shrink-0 text-xl leading-none tracking-wide text-phosphor-400">{title}</h2>
+    <span class="min-w-0 flex-1 overflow-hidden text-phosphor-600/70" aria-hidden="true">{run}</span>
+    {meta && <span class="shrink-0 text-xs tabular-nums text-phosphor-dim">{meta}</span>}
+  </div>
+  <div class="ascii-body px-4 pb-5 pt-4 sm:px-6 sm:pb-6">
+    <slot />
+  </div>
+</Tag>

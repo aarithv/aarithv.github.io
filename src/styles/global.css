@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+@theme {
+  /* phosphor green ramp — kept inside the #00ff41–#33ff66 band from inspo/STYLE.md */
+  --color-phosphor-300: #7dffa3;
+  --color-phosphor-400: #33ff66;
+  --color-phosphor-500: #00ff41;
+  --color-phosphor-600: #00cc34;
+  --color-phosphor-dim: #4ade80; /* large text / labels only — see contrast note below */
+
+  --color-crt-black: #0a0a0a;
+  --color-crt-void: #000000;
+
+  /* Win95/98 real-gray chrome — reserved for Variant C's "borrowed OS chrome" exception */
+  --color-win95-face: #c0c0c0;
+  --color-win95-highlight: #ffffff;
+  --color-win95-shadow: #808080;
+  --color-win95-darkest: #000000;
+
+  --font-mono: "JetBrains Mono", ui-monospace, "Courier New", monospace;
+  --font-terminal: "VT323", "JetBrains Mono", monospace;
+  --font-pixel: "Press Start 2P", "VT323", monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-crt-void);
+    color: var(--color-phosphor-500);
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Theme the browser-default surfaces so the world holds even where we didn't draw. */
+  ::selection {
+    background-color: var(--color-phosphor-500);
+    color: var(--color-crt-void);
+  }
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-crt-black);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-phosphor-600);
+    border: 2px solid var(--color-crt-black);
+  }
+  * {
+    scrollbar-color: var(--color-phosphor-600) var(--color-crt-black);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-phosphor-400);
+    outline-offset: 2px;
+  }
+  html {
+    caret-color: var(--color-phosphor-400);
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Cross-document crossfade between pages; the mini-map and nav keep their
+   place, so only the plate content appears to change. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer components {
+  /* Atlas plate: a hairline frame with registration ticks at each corner. */
+  .atlas-frame {
+    --tick: 14px;
+    --tick-color: var(--color-phosphor-500);
+    border: 1px solid color-mix(in srgb, var(--color-phosphor-600) 35%, transparent);
+    background:
+      linear-gradient(var(--tick-color), var(--tick-color)) top left / var(--tick) 1px,
+      linear-gradient(var(--tick-color), var(--tick-color)) top left / 1px var(--tick),
+      linear-gradient(var(--tick-color), var(--tick-color)) top right / var(--tick) 1px,
+      linear-gradient(var(--tick-color), var(--tick-color)) top right / 1px var(--tick),
+      linear-gradient(var(--tick-color), var(--tick-color)) bottom left / var(--tick) 1px,
+      linear-gradient(var(--tick-color), var(--tick-color)) bottom left / 1px var(--tick),
+      linear-gradient(var(--tick-color), var(--tick-color)) bottom right / var(--tick) 1px,
+      linear-gradient(var(--tick-color), var(--tick-color)) bottom right / 1px var(--tick),
+      color-mix(in srgb, var(--color-crt-void) 78%, transparent);
+    background-repeat: no-repeat;
+  }
+
+  /* Ruler: a hairline with a minor tick every 8px and a major every 64px. */
+  .tick-rule {
+    height: 9px;
+    border-top: 1px solid color-mix(in srgb, var(--color-phosphor-600) 55%, transparent);
+    background:
+      repeating-linear-gradient(to right, var(--color-phosphor-600) 0 1px, transparent 1px 64px) top left / 100% 9px no-repeat,
+      repeating-linear-gradient(to right, color-mix(in srgb, var(--color-phosphor-600) 50%, transparent) 0 1px, transparent 1px 8px) top left / 100% 4px no-repeat;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 18px color-mix(in srgb, var(--color-phosphor-500) 35%, transparent);
+  }
+
+  /* Inline links inside running text. */
+  .link {
+    color: var(--color-phosphor-400);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-phosphor-400) 40%, transparent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color 160ms ease-out;
+  }
+  .link:hover {
+    text-decoration-color: var(--color-phosphor-400);
+  }
+
+  /* Text written in content/ files: paragraph spacing and inline links. */
+  .prose-body > * + * {
+    margin-top: 1em;
+  }
+  .prose-body a {
+    color: var(--color-phosphor-400);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-phosphor-400) 40%, transparent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+  .prose-body a:hover {
+    text-decoration-color: var(--color-phosphor-400);
+  }
+  .prose-body strong {
+    color: var(--color-phosphor-400);
+    font-weight: 700;
+  }
+
+  /* Outlined terminal button. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding: 0 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--color-phosphor-500) 60%, transparent);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-phosphor-400);
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out,
+      color 160ms ease-out;
+  }
+  .btn:hover {
+    border-color: var(--color-phosphor-400);
+    background-color: color-mix(in srgb, var(--color-phosphor-500) 12%, transparent);
+  }
+  .btn-solid {
+    background-color: var(--color-phosphor-500);
+    border-color: var(--color-phosphor-500);
+    color: var(--color-crt-void);
+  }
+  .btn-solid:hover {
+    background-color: var(--color-phosphor-400);
+    color: var(--color-crt-void);
+  }
+}
+
+/* Belt-and-suspenders reduced-motion floor. Each variant also gates its own
+   authored animations individually inside (prefers-reduced-motion: no-preference). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

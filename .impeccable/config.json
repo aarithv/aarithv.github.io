@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/pages/photography.astro"
+        ],
+        "createdAt": "2026-09-26T02:17:11.191Z",
+        "reason": "lightbox <img> is intentionally empty until JS sets src on open, matching original site's lightbox pattern"
+      }
+    ]
+  }
+}

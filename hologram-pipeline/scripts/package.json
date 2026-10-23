@@ -1,0 +1,8 @@
+{
+  "name": "hologram-pipeline-vendor-scripts",
+  "private": true,
+  "description": "devDependency-only package used to fetch lil-gui for vendoring into viewer/vendor/. Not a runtime dependency of anything.",
+  "devDependencies": {
+    "lil-gui": "^0.20.0"
+  }
+}

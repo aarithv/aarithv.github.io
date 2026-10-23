@@ -1,0 +1,420 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AsciiPanel from '../components/AsciiPanel.astro';
+import BrainAtlas from '../components/BrainAtlas.astro';
+import RuneRain from '../components/RuneRain.astro';
+import { getCollection } from 'astro:content';
+import { getBio, getDocuments, getPage, getPhotos, getSections, getSite, plateFor } from '../data/content';
+
+const site = await getSite();
+const home = await getPage('home');
+const Bio = await getBio();
+const sections = await getSections();
+const photos = await getPhotos();
+const documents = await getDocuments();
+const research = await getCollection('research');
+const awards = await getCollection('awards');
+
+// The name sets on two lines: first word, then the rest.
+const [firstName, ...restOfName] = (site.name ?? '').split(' ');
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const counts: Record<string, string> = {
+  research: plural(research.length, 'entry', 'entries'),
+  awards: plural(awards.length, 'honor', 'honors'),
+  resume: plural(documents.length, 'PDF', 'PDFs'),
+  photography: plural(photos.length, 'frame', 'frames'),
+};
+// Three thumbnails spread across the gallery, however many photos it holds.
+const previewPhotos = [0.1, 0.5, 0.8]
+  .map((f) => photos[Math.floor(f * photos.length)])
+  .filter((p, i, all) => p && all.indexOf(p) === i);
+---
+
+<BaseLayout title={home.title} description={home.description}>
+  <BrainAtlas />
+
+  <section class="hero relative overflow-hidden border-t border-phosphor-600/30">
+    <RuneRain />
+
+    <div
+      class="hero-grid relative mx-auto grid max-w-6xl items-center gap-x-10 gap-y-8 px-5 pb-14 pt-6 sm:px-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:py-20"
+    >
+      <figure class="face-figure relative mx-auto w-full max-w-[520px]">
+        <div class="face-hologram-wrap aspect-square" aria-hidden="true">
+          <canvas class="face-hologram-canvas block h-full w-full"></canvas>
+        </div>
+      </figure>
+
+      <div class="hero-copy min-w-0">
+        <h1 class="font-terminal text-glow text-[clamp(3.25rem,7.4vw,5.75rem)] leading-[0.88] text-phosphor-400">
+          {firstName}{restOfName.length > 0 && <><br />{restOfName.join(' ')}</>}
+        </h1>
+        <dl class="mt-6 grid gap-y-2 text-sm leading-snug">
+          <div class="grid grid-cols-[5.5rem_1fr] gap-x-3">
+            <dt class="text-phosphor-dim">ROLE</dt>
+            <dd>{home.role}</dd>
+          </div>
+          <div class="grid grid-cols-[5.5rem_1fr] gap-x-3">
+            <dt class="text-phosphor-dim">STATUS</dt>
+            <dd class="flex items-baseline gap-2">
+              <span class="live-dot mt-1 inline-block h-1.5 w-1.5 shrink-0 translate-y-[-1px] rounded-full bg-phosphor-400" aria-hidden="true"></span>
+              <span>{home.status}</span>
+            </dd>
+          </div>
+        </dl>
+        <div class="tick-rule mt-7" aria-hidden="true"></div>
+        <div class="prose-body mt-6 max-w-[62ch] text-[0.94rem] leading-[1.75]">
+          <Bio />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative z-10 mx-auto max-w-6xl px-5 pb-24 pt-4 sm:px-8 xl:pt-0">
+    <AsciiPanel title="REGION INDEX" meta={`${sections.length} regions mapped`}>
+      <ul class="region-index -mx-4 sm:-mx-6">
+        {sections.map((r) => (
+          <li>
+            <a href={r.href} class="index-row group" data-region={r.id}>
+              <span class="flex items-center gap-3">
+                <svg viewBox="0 0 12 12" class="h-2.5 w-2.5 shrink-0 text-phosphor-500" aria-hidden="true">
+                  <circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.3" class="index-node" />
+                </svg>
+                <span class="font-terminal text-[1.9rem] leading-none text-phosphor-400">{r.label}</span>
+              </span>
+              <span class="text-xs leading-snug text-phosphor-dim">
+                <span class="text-phosphor-500">{r.structure}</span>
+                <span class="block">{r.role}</span>
+              </span>
+              <span class="index-detail text-sm leading-relaxed">
+                {r.summary}
+                {r.id === 'photography' && previewPhotos.length > 0 && (
+                  <span class="mt-3 flex gap-2" aria-hidden="true">
+                    {previewPhotos.map((photo) => (
+                      <img src={photo.src} alt="" loading="lazy" class="index-thumb h-14 w-20 object-cover" />
+                    ))}
+                  </span>
+                )}
+              </span>
+              <span class="flex items-center justify-between gap-4 text-xs tabular-nums text-phosphor-dim sm:justify-end">
+                <span class="flex flex-col sm:items-end">
+                  <span class="uppercase tracking-[0.1em]">{plateFor(r)}</span>
+                  {counts[r.id] && <span class="mt-1">{counts[r.id]}</span>}
+                </span>
+                <svg viewBox="0 0 24 24" class="index-arrow h-4 w-4 shrink-0 text-phosphor-400" aria-hidden="true">
+                  <path d="M4 12h14M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </AsciiPanel>
+  </section>
+</BaseLayout>
+
+
+<script>
+  // Ported as exactly as practical from hologram-pipeline/viewer/js/{main,shaders/*}.js
+  // (the standalone hologram viewer) — same shader math, same uniform defaults,
+  // same bloom pass, same OrbitControls setup. Two deliberate adaptations for
+  // living embedded in a scrolling page rather than a full-page standalone
+  // viewer: enableZoom is off (mouse-wheel over this region would otherwise
+  // hijack page scroll), and rotation is auto-sway + drag instead of sway +
+  // drag alone — see hologram-pipeline/viewer/js/sway.js for the sway source.
+  import * as THREE from 'three';
+  import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+  const frame = document.querySelector<HTMLElement>('.face-hologram-wrap');
+  const faceCanvas = frame?.querySelector<HTMLCanvasElement>('.face-hologram-canvas');
+
+  if (frame && faceCanvas) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const color = 0x04ff00;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
+
+    // Opaque black, like the standalone viewer: UnrealBloomPass doesn't carry
+    // alpha through, so on a transparent canvas the bloom haze fills the whole
+    // rectangle. The canvas uses mix-blend-mode: screen instead, which makes
+    // the black drop out against the page.
+    const renderer = new THREE.WebGLRenderer({ canvas: faceCanvas, antialias: true });
+    renderer.setClearColor(0x000000, 1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    // On touch screens the hologram sits in the page's scroll path; letting
+    // OrbitControls claim touches there would trap the scroll.
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      controls.enabled = false;
+      renderer.domElement.style.touchAction = 'pan-y';
+    }
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.enableZoom = false; // deviation from the standalone viewer — see note above
+    controls.minDistance = 0.8;
+    controls.maxDistance = 8;
+    controls.minAzimuthAngle = -Math.PI / 3; // -60deg
+    controls.maxAzimuthAngle = Math.PI / 3; // +60deg
+    controls.minPolarAngle = Math.PI / 2 - 0.35;
+    controls.maxPolarAngle = Math.PI / 2 + 0.35;
+
+    function fovFactorFor(cam: THREE.PerspectiveCamera) {
+      return 1.0 / Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2);
+    }
+
+    // Real depth data + luminance, produced offline by hologram-pipeline/
+    // (rembg background removal, monocular depth estimation, bust crop with
+    // a faded bottom edge) and exported as a point cloud — see
+    // hologram-pipeline/README.md. Recolored here; the PLY itself only
+    // carries grayscale intensity.
+    const uniforms = {
+      uColor: { value: new THREE.Color(color) },
+      uTime: { value: 0 },
+      // The vertex shader already scales points by viewport height, so this
+      // stays near the standalone viewer's 0.014: much larger (0.05 was tried)
+      // and points pile up under additive blending into a solid blob; at
+      // 0.014 dark cracks open where the depth changes steeply.
+      uPointSize: { value: 0.028 },
+      uDepthScale: { value: 0.6 },
+      uScanDensity: { value: 14.0 },
+      uGlowIntensity: { value: 0.6 },
+      uGlitchStrength: { value: 0.015 },
+      uViewportHeight: { value: renderer.domElement.height },
+      uFovFactor: { value: fovFactorFor(camera) },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: /* glsl */ `
+        uniform float uPointSize;
+        uniform float uDepthScale;
+        uniform float uViewportHeight;
+        uniform float uFovFactor;
+
+        varying float vIntensity;
+        varying vec3 vViewPos;
+
+        void main() {
+          vIntensity = color.r;
+
+          vec3 pos = position;
+          pos.z *= uDepthScale;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          vViewPos = mvPosition.xyz;
+          gl_Position = projectionMatrix * mvPosition;
+
+          float pixelsPerWorldUnit = (uViewportHeight * uFovFactor) / (2.0 * -mvPosition.z);
+          gl_PointSize = uPointSize * pixelsPerWorldUnit * (0.4 + 0.6 * vIntensity);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform vec3 uColor;
+        uniform float uTime;
+        uniform float uScanDensity;
+        uniform float uGlowIntensity;
+        uniform float uGlitchStrength;
+
+        varying float vIntensity;
+        varying vec3 vViewPos;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+        }
+
+        void main() {
+          vec2 pc = gl_PointCoord - 0.5;
+          float d = length(pc);
+          if (d > 0.5) discard;
+
+          float rim = smoothstep(0.15, 0.5, d);
+          float scan = 0.5 + 0.5 * sin(vViewPos.y * uScanDensity - uTime * 1.5);
+          float flicker = 0.92 + 0.08 * sin(uTime * 17.0 + vViewPos.x * 3.0);
+
+          float glitchLine = step(0.996, hash(vec2(floor(uTime * 6.0), floor(vViewPos.y * 8.0))));
+          float glitchBoost = glitchLine * uGlitchStrength * 40.0;
+
+          float brightness = vIntensity * flicker * mix(0.85, 1.0, scan) + rim * uGlowIntensity + glitchBoost;
+          float alpha = vIntensity * (1.0 - d);
+
+          gl_FragColor = vec4(uColor * brightness, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexColors: true,
+    });
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    // Much gentler than the standalone viewer's 0.9/0.6/0.1, with a higher
+    // threshold, so only the brightest points glow and the forehead and
+    // cheeks don't blow out over the features.
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.4, 0.4, 0.45);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+
+    let cloud: THREE.Points | null = null;
+    let visible = false;
+    let ready = false;
+
+    function resize() {
+      const w = frame!.clientWidth;
+      const h = frame!.clientHeight;
+      visible = w > 0 && h > 0;
+      if (!visible) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      composer.setSize(w, h);
+      uniforms.uViewportHeight.value = renderer.domElement.height;
+      uniforms.uFovFactor.value = fovFactorFor(camera);
+      if (reduceMotion && ready) composer.render();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    new PLYLoader().load(
+      '/hologram/face-points.ply',
+      (geometry) => {
+        geometry.computeBoundingSphere();
+        geometry.center();
+
+        cloud = new THREE.Points(geometry, material);
+        scene.add(cloud);
+        ready = true;
+
+        const radius = geometry.boundingSphere ? geometry.boundingSphere.radius : 2;
+        const fitDistance = (radius * 1.0) / Math.sin(THREE.MathUtils.degToRad(camera.fov) / 2);
+        camera.position.set(0, 0, Math.max(fitDistance, controls.minDistance));
+        camera.updateProjectionMatrix();
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        if (reduceMotion) {
+          cloud.rotation.y = THREE.MathUtils.degToRad(12);
+          if (visible) composer.render();
+        }
+      },
+      undefined,
+      (err) => console.error('Failed to load face hologram point cloud:', err)
+    );
+
+    let onScreen = true;
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+    }).observe(frame);
+
+    if (!reduceMotion) {
+      const start = performance.now();
+      function animate(now: number) {
+        const t = (now - start) / 1000;
+        uniforms.uTime.value = t;
+        if (cloud) {
+          cloud.rotation.y = Math.sin(t * 0.5) * THREE.MathUtils.degToRad(16);
+          cloud.rotation.x = Math.sin(t * 0.33) * THREE.MathUtils.degToRad(4);
+        }
+        controls.update();
+        if (visible && onScreen) composer.render();
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    }
+  }
+</script>
+
+
+<script>
+  // Region index rows set the background web off where the pointer enters.
+  document.querySelectorAll<HTMLElement>('.index-row').forEach((row) => {
+    row.addEventListener('pointerenter', (event) => {
+      window.dispatchEvent(new CustomEvent('neuron:burst', { detail: { x: event.clientX, y: event.clientY } }));
+    });
+  });
+</script>
+
+<style>
+  .face-hologram-wrap {
+    /* On the wrap, not the canvas: blending reaches the rune rain and neuron
+       web behind it from here. */
+    mix-blend-mode: screen;
+    /* Feather the canvas edge so the faint bloom floor never reads as a box. */
+    mask-image: radial-gradient(closest-side, black 72%, transparent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .live-dot {
+      animation: live 2.4s ease-in-out infinite;
+    }
+  }
+  @keyframes live {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* ---- Region index ---- */
+  .index-row {
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding: 1.4rem 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-phosphor-600) 28%, transparent);
+    transition: background-color 180ms ease-out;
+  }
+  .region-index li:first-child .index-row {
+    border-top: 0;
+  }
+  @media (min-width: 640px) {
+    .index-row {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 900px) {
+    .index-row {
+      grid-template-columns: 12rem 11rem minmax(0, 1fr) 7rem;
+      align-items: start;
+    }
+  }
+  .index-row:hover,
+  .index-row:focus-visible {
+    background-color: color-mix(in srgb, var(--color-phosphor-500) 7%, transparent);
+  }
+  .index-row:focus-visible {
+    outline-offset: -2px;
+  }
+  .index-detail {
+    max-width: 62ch;
+  }
+  .index-node {
+    transition: fill 160ms ease-out;
+  }
+  .index-row:hover .index-node {
+    fill: currentColor;
+  }
+  .index-arrow {
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .index-row:hover .index-arrow {
+    transform: translateX(4px);
+  }
+  /* Photos sit in the phosphor monochrome until the row is looked at. */
+  .index-thumb {
+    border: 1px solid color-mix(in srgb, var(--color-phosphor-600) 40%, transparent);
+    filter: grayscale(1) sepia(1) hue-rotate(62deg) saturate(2.6) brightness(0.8);
+    transition: filter 400ms ease-out;
+  }
+  .index-row:hover .index-thumb,
+  .index-row:focus-visible .index-thumb {
+    filter: none;
+  }
+</style>
