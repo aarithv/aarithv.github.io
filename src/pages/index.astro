@@ -31,7 +31,7 @@ const previewPhotos = [0.1, 0.5, 0.8]
   .filter((p, i, all) => p && all.indexOf(p) === i);
 ---
 
-<BaseLayout title={home.title} description={home.description}>
+<BaseLayout title={home.title} description={home.description} image={home.shareImage}>
   <BrainAtlas />
 
   <section class="hero relative overflow-hidden border-t border-phosphor-600/30">

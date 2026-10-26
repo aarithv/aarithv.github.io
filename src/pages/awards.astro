@@ -20,7 +20,7 @@ const raster = Array.from({ length: last - first + 1 }, (_, i) => {
 });
 ---
 
-<BaseLayout title={page.title} description={page.description}>
+<BaseLayout title={page.title} description={page.description} image={page.shareImage}>
   <PageHeader title={page.title ?? 'Awards'}>{page.hasBody && <page.Content />}</PageHeader>
 
   <div class="mx-auto max-w-6xl px-5 pb-28 sm:px-8">

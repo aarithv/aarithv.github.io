@@ -5,6 +5,11 @@
 name: Aarith Veerabhadran # used in page titles and the footer
 brand: AARITH_ # the logo text at the top left
 description: Personal site — research, projects, and photography. # fallback search/share description
+
+# Link preview: the picture shown when someone texts or posts a link to the site.
+# Put the image in public/images/ and give its path here. Best size: 1200 × 630 (PNG or JPG).
+# Any page can use its own by adding a shareImage: line to its file in content/pages/.
+shareImage: /images/share.png
 tagline: An atlas of one brain. # big line in the footer
 location: Ann Arbor, Michigan # shown in the footer after the copyright
 

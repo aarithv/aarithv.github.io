@@ -45,6 +45,27 @@ what belongs to what). If a value contains a colon followed by a space, put
 the whole value in quotes, like `summary: "Huang Lab: complexity measures"`.
 If you make a mistake, the dev server shows an error naming the file and line.
 
+## Link previews (what shows when you text or post the link)
+
+A link preview has three parts, all editable:
+
+| Part | Where |
+|---|---|
+| Title | the page's `title` (the home page's is in `content/pages/home.md`) |
+| Description | the page's `description` line |
+| Image | `shareImage` in `content/site.md` (currently `public/images/share.png`) |
+
+To change the image, put a new picture in `public/images/`, ideally
+**1200 × 630 pixels** (PNG or JPG, under about 1 MB), and point `shareImage` at
+it, e.g. `shareImage: /images/my-preview.jpg`. To give one page its own
+preview, add a `shareImage:` line to that page's file in `content/pages/`.
+
+Previews only update after you push to GitHub. Messaging apps also remember a
+preview for a while, so a link you already sent may keep the old one. Facebook's
+[Sharing Debugger](https://developers.facebook.com/tools/debug/) and
+[opengraph.xyz](https://www.opengraph.xyz/) show what a link looks like and
+can refresh the cached copy.
+
 ## Files: `public/`
 
 | Folder | What goes there | What happens |

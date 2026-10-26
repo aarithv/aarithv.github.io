@@ -11,13 +11,14 @@ import { getSite } from '../data/content';
 interface Props {
   title?: string;
   description?: string;
+  /** Link-preview image for this page; falls back to shareImage in content/site.md. */
   image?: string;
   /** Keep the page out of search results (for pages only reachable by link). */
   noindex?: boolean;
 }
 
 const site = await getSite();
-const { title, description = site.description, image = '/images/og-default.png', noindex = false } = Astro.props;
+const { title, description = site.description, image = site.shareImage ?? '/images/share.png', noindex = false } = Astro.props;
 // Page titles read "About — <name>"; a page titled with the name itself (home) stays as is.
 const fullTitle = !title || title === site.name ? site.name : `${title} — ${site.name}`;
 

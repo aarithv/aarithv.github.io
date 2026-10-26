@@ -14,7 +14,7 @@ const views = [
 ];
 ---
 
-<BaseLayout title={page.title} description={page.description} noindex>
+<BaseLayout title={page.title} description={page.description} image={page.shareImage} noindex>
   <PageHeader title={page.title ?? 'Gradient viewer'}>{page.hasBody && <page.Content />}</PageHeader>
 
   <div class="mx-auto grid max-w-6xl gap-10 px-5 pb-28 sm:px-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-start">

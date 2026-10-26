@@ -11,7 +11,7 @@ const photos = (page.snapshots ?? []).map((p) => ({ src: image(p.file), alt: p.c
 const readout = page.readout ?? [];
 ---
 
-<BaseLayout title={page.title} description={page.description}>
+<BaseLayout title={page.title} description={page.description} image={page.shareImage}>
   <PageHeader title={page.title ?? 'About'}>{page.hasBody && <page.Content />}</PageHeader>
 
   <div class="mx-auto grid max-w-6xl gap-12 px-5 pb-24 sm:px-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-14">

@@ -41,9 +41,10 @@ const image = z.object({ file: z.string(), alt: z.string().optional(), caption: 
 const pages = defineCollection({
   loader: glob({ pattern: ['site.md', 'bio.md', 'pages/*.md'], base: './content' }),
   schema: z.object({
-    // every page
+    // every page (and site.md, as the default)
     title: z.string().optional(),
     description: z.string().optional(),
+    shareImage: z.string().optional(),
     // site.md
     name: z.string().optional(),
     brand: z.string().optional(),

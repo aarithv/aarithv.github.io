@@ -8,7 +8,7 @@ const page = await getPage('photography');
 const photos = await getPhotos();
 ---
 
-<BaseLayout title={page.title} description={page.description}>
+<BaseLayout title={page.title} description={page.description} image={page.shareImage}>
   <PageHeader title={page.title ?? 'Photography'}>{page.hasBody && <page.Content />}</PageHeader>
 
   <div class="mx-auto max-w-6xl px-5 pb-28 sm:px-8">
